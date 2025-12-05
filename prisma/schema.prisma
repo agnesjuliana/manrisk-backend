@@ -4,20 +4,551 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+// ============ ENUMS ============
 enum Role {
   ADMIN
-  USER
+  RISK_MANAGER
+  RISK_OWNER
 }
 
-model Accounts {
-  id                     String                   @id @default(uuid())
-  name                   String
-  email                  String                   @unique
-  password               String
-  role                   Role                     @default(USER)
-  is_email_verified      Boolean                  @default(false)
-  created_at             DateTime                 @default(now())
-  updated_at             DateTime                 @default(now()) @updatedAt
+enum CIA {
+  C
+  I
+  A
+}
+
+enum AssetStatus {
+  DRAFT
+  MENUNGGU_PERSETUJUAN_RM
+  MENUNGGU_PERSETUJUAN_FINAL
+  REVISI
+  DISETUJUI
+  DITOLAK
+}
+
+enum RiskRegisterStatus {
+  DRAFT
+  MENUNGGU_PERSETUJUAN_RM
+  MENUNGGU_PERSETUJUAN_FINAL
+  REVISI
+  DISETUJUI
+  DITOLAK
+}
+
+enum TreatmentOption {
+  MITIGATE
+  ACCEPT
+  AVOID
+  TRANSFER
+}
+
+enum SOAStatus {
+  BERJALAN
+  DIRENCANAKAN
+  TIDAK_KOMPATIBEL
+}
+
+enum AudittrailAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// ============ MAIN MODELS ============
+model User {
+  id             String    @id @default(uuid())
+  organizationId String?
+  departmentId   String?
+  email          String    @unique
+  name           String
+  role           Role      @default(ADMIN)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization     Organization?             @relation(fields: [organizationId], references: [id])
+  department       Department?               @relation(fields: [departmentId], references: [id])
+  ownedAssets      Asset[]                   @relation("AssetOwner")
+  riskOwned        RiskRegister[]            @relation("RiskOwner")
+  riskRevisionLogs RiskRegisterRevisionLog[] @relation("RevisionManager")
+  riskApprovalTLs  RiskApprovalTL[]          @relation("RiskApprovalManager")
+  treatments       Treatment[]               @relation("TreatmentManager")
+  treatmentPICs    Treatment[]               @relation("TreatmentPIC")
+  reassessments    ReassessmentRisk[]        @relation("ReassessmentManager")
+  soas             SOA[]                     @relation("SOAManager")
+  audittrails      Audittrail[]
+
+  @@index([organizationId])
+  @@index([departmentId])
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  address   String
+  email     String
+  noTelp    String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime?
+  deletedAt DateTime?
+
+  users                User[]
+  contexts             Context[]
+  externalStakeholders ExternalStakeholder[]
+  ciaObjectives        CIAObjective[]
+  servicePriorities    ServicePriority[]
+  regulations          Regulation[]
+  riskCriteria         RiskCriteria[]
+  assetTypes           AssetType[]
+  assetClassifications AssetClassification[]
+  assets               Asset[]
+  riskCategories       RiskCategory[]
+  riskSources          RiskSource[]
+  riskRegisters        RiskRegister[]
+  riskApprovalTLs      RiskApprovalTL[]
+  controls             Control[]
+  treatments           Treatment[]
+  reassessments        ReassessmentRisk[]
+  soas                 SOA[]
+}
+
+model Department {
+  id          String    @id @default(uuid())
+  name        String?
+  description String?
+  isActive    Boolean?
+  createdAt   DateTime?
+  updatedAt   DateTime?
+  deletedAt   DateTime?
+
+  users User[]
+}
+
+model Context {
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String
+  description    String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization      Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  servicePriorities ServicePriority[]
+  riskRegisters     RiskRegister[]
+  riskRevisionLogs  RiskRegisterRevisionLog[]
+
+  @@index([organizationId])
+}
+
+model ExternalStakeholder {
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String
+  interest       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model CIAObjective {
+  id             String    @id @default(uuid())
+  organizationId String
+  type           CIA
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model ServicePriority {
+  id             String    @id @default(uuid())
+  organizationId String
+  contextId      String?
+  serviceName    String
+  cScore         Int
+  iScore         Int
+  aScore         Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  context      Context?     @relation(fields: [contextId], references: [id])
+
+  @@index([organizationId])
+  @@index([contextId])
+}
+
+model Regulation {
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model RiskCriteria {
+  id             String    @id @default(uuid())
+  organizationId String
+  isFMEA         Boolean
+  scale          Int
+  threshold      Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization  Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  scaleStatuses ScaleStatus[]
+
+  @@index([organizationId])
+}
+
+model ScaleStatus {
+  id             String    @id @default(uuid())
+  riskCriteriaId String
+  level          Int
+  title          String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  riskCriteria RiskCriteria @relation(fields: [riskCriteriaId], references: [id], onDelete: Cascade)
+
+  @@index([riskCriteriaId])
+}
+
+model AssetType {
+  id             String    @id @default(uuid())
+  organizationId String?
+  title          String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  assets       Asset[]
+
+  @@index([organizationId])
+}
+
+model AssetClassification {
+  id             String    @id @default(uuid())
+  organizationId String?
+  title          String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  assets       Asset[]
+
+  @@index([organizationId])
+}
+
+model Asset {
+  id               String      @id @default(uuid())
+  organizationId   String
+  typeId           String
+  classificationId String
+  ownerId          String
+  name             String
+  location         String?
+  status           AssetStatus @default(DRAFT)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime?
+  deletedAt        DateTime?
+
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  type           AssetType           @relation(fields: [typeId], references: [id])
+  classification AssetClassification @relation(fields: [classificationId], references: [id])
+  owner          User                @relation("AssetOwner", fields: [ownerId], references: [id])
+  riskRegisters  RiskRegister[]
+
+  @@index([organizationId])
+  @@index([typeId])
+  @@index([classificationId])
+  @@index([ownerId])
+}
+
+model RiskCategory {
+  id             String    @id @default(uuid())
+  organizationId String?
+  title          String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization     Organization?             @relation(fields: [organizationId], references: [id])
+  riskRegisters    RiskRegister[]
+  riskRevisionLogs RiskRegisterRevisionLog[]
+
+  @@index([organizationId])
+}
+
+model RiskSource {
+  id             String    @id @default(uuid())
+  organizationId String?
+  title          String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization     Organization?             @relation(fields: [organizationId], references: [id])
+  riskRegisters    RiskRegister[]
+  riskRevisionLogs RiskRegisterRevisionLog[]
+
+  @@index([organizationId])
+}
+
+model RiskRegister {
+  id                  String              @id @default(uuid())
+  organizationId      String
+  ownerId             String
+  assetId             String?
+  contextId           String?
+  riskCategoryId      String
+  riskSourceId        String?
+  customRiskId        String
+  vulnerability       String
+  threat              String
+  identifiedRisk      String
+  detail              String?
+  isConfidentiality   Boolean             @default(false)
+  isIntegrity         Boolean             @default(false)
+  isAvailability      Boolean             @default(false)
+  impactSeverity      Int?
+  likelihoodOccurence Int?
+  detection           Int?
+  status              RiskRegisterStatus?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime?
+  deletedAt           DateTime?
+
+  organization        Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner               User                      @relation("RiskOwner", fields: [ownerId], references: [id])
+  asset               Asset?                    @relation(fields: [assetId], references: [id])
+  context             Context?                  @relation(fields: [contextId], references: [id])
+  category            RiskCategory              @relation(fields: [riskCategoryId], references: [id])
+  source              RiskSource?               @relation(fields: [riskSourceId], references: [id])
+  revisionLogs        RiskRegisterRevisionLog[]
+  treatments          Treatment[]
+  reassessments       ReassessmentRisk[]
+  riskApprovalTLRisks RiskApprovalTLRisk[]
+
+  @@index([organizationId])
+  @@index([ownerId])
+  @@index([assetId])
+  @@index([contextId])
+  @@index([riskCategoryId])
+  @@index([riskSourceId])
+}
+
+model RiskRegisterRevisionLog {
+  id                  String    @id @default(uuid())
+  riskId              String
+  managerId           String
+  contextId           String?
+  riskCategoryId      String
+  riskSourceId        String?
+  customRiskId        String
+  vulnerability       String
+  threat              String
+  identifiedRisk      String
+  detail              String?
+  isConfidentiality   Boolean   @default(false)
+  isIntegrity         Boolean   @default(false)
+  isAvailability      Boolean   @default(false)
+  impactSeverity      Int?
+  likelihoodOccurence Int?
+  detection           Int?
+  isApprovedByOwner   Boolean?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime?
+  deletedAt           DateTime?
+
+  risk     RiskRegister @relation(fields: [riskId], references: [id], onDelete: Cascade)
+  manager  User         @relation("RevisionManager", fields: [managerId], references: [id])
+  context  Context?     @relation(fields: [contextId], references: [id])
+  category RiskCategory @relation(fields: [riskCategoryId], references: [id])
+  source   RiskSource?  @relation(fields: [riskSourceId], references: [id])
+
+  @@index([riskId])
+  @@index([managerId])
+  @@index([contextId])
+  @@index([riskCategoryId])
+  @@index([riskSourceId])
+}
+
+model RiskApprovalTL {
+  id             String             @id @default(uuid())
+  organizationId String
+  managerId      String
+  message        String?
+  status         RiskRegisterStatus @default(DRAFT)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  manager      User                 @relation("RiskApprovalManager", fields: [managerId], references: [id])
+  risks        RiskApprovalTLRisk[]
+
+  @@index([organizationId])
+  @@index([managerId])
+}
+
+model RiskApprovalTLRisk {
+  id               String @id @default(uuid())
+  riskApprovalTLId String
+  riskId           String
+
+  riskApprovalTL RiskApprovalTL @relation(fields: [riskApprovalTLId], references: [id], onDelete: Cascade)
+  risk           RiskRegister   @relation(fields: [riskId], references: [id], onDelete: Cascade)
+
+  @@unique([riskApprovalTLId, riskId])
+  @@index([riskApprovalTLId])
+  @@index([riskId])
+}
+
+model Control {
+  id             String    @id @default(uuid())
+  code           String
+  title          String
+  isAnnex        Boolean   @default(false)
+  organizationId String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization?      @relation(fields: [organizationId], references: [id])
+  treatments   TreatmentControl[]
+  soas         SOA[]
+
+  @@index([organizationId])
+}
+
+model Treatment {
+  id                        String          @id @default(uuid())
+  riskId                    String
+  managerId                 String
+  picId                     String
+  organizationId            String
+  treatmentOpt              TreatmentOption
+  impactSeverityTarget      Int?
+  likelihoodOccurenceTarget Int?
+  detectionTarget           Int?
+  actionReason              String?
+  detailedActionPlan        String
+  startAction               DateTime
+  endAction                 DateTime
+  notes                     String?
+  isApprovedByTop           Boolean?
+  createdAt                 DateTime        @default(now())
+  updatedAt                 DateTime?
+  deletedAt                 DateTime?
+
+  risk            RiskRegister       @relation(fields: [riskId], references: [id], onDelete: Cascade)
+  manager         User               @relation("TreatmentManager", fields: [managerId], references: [id])
+  pic             User               @relation("TreatmentPIC", fields: [picId], references: [id])
+  organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  relatedControls TreatmentControl[]
+
+  @@index([riskId])
+  @@index([managerId])
+  @@index([picId])
+  @@index([organizationId])
+}
+
+model TreatmentControl {
+  id          String @id @default(uuid())
+  treatmentId String
+  controlId   String
+
+  treatment Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+  control   Control   @relation(fields: [controlId], references: [id], onDelete: Cascade)
+
+  @@unique([treatmentId, controlId])
+  @@index([treatmentId])
+  @@index([controlId])
+}
+
+model ReassessmentRisk {
+  id                  String    @id @default(uuid())
+  riskId              String
+  managerId           String
+  organizationId      String
+  impactSeverity      Int?
+  likelihoodOccurence Int?
+  detection           Int?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime?
+  deletedAt           DateTime?
+
+  risk         RiskRegister @relation(fields: [riskId], references: [id], onDelete: Cascade)
+  manager      User         @relation("ReassessmentManager", fields: [managerId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([riskId])
+  @@index([managerId])
+  @@index([organizationId])
+}
+
+model SOA {
+  id             String     @id @default(uuid())
+  organizationId String
+  controlId      String
+  managerId      String
+  status         SOAStatus?
+  efektivitas    Int
+  notes          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  control      Control      @relation(fields: [controlId], references: [id])
+  manager      User         @relation("SOAManager", fields: [managerId], references: [id])
+
+  @@index([organizationId])
+  @@index([controlId])
+  @@index([managerId])
+}
+
+model Audittrail {
+  id             String           @id @default(uuid())
+  userId         String?
+  assetId        String?
+  riskId         String?
+  treatmentId    String?
+  reassessmentId String?
+  soaId          String?
+  action         AudittrailAction
+  status         String
+  detail         String?
+  createdAt      DateTime         @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([assetId])
+  @@index([riskId])
+  @@index([treatmentId])
+  @@index([reassessmentId])
+  @@index([soaId])
 }
