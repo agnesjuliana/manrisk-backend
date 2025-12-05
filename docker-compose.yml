@@ -1,0 +1,29 @@
+version: '3'
+services:
+  database:
+    container_name: database-postgre
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+    ports:
+      - ${DATABASE_PORT}:5432
+    expose:
+      - ${DATABASE_PORT}
+    volumes:
+      - ./docker/volumes/:/var/lib/postgresql/data
+  redis:
+    container_name: redis-cache
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - ${CACHE_PORT}:6379
+    command: redis-server --appendonly yes
+    volumes:
+      - ./docker/redis-data:/data
+
+volumes:
+  postgres-data:
+  redis-data:
