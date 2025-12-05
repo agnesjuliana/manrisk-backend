@@ -19,6 +19,9 @@ CREATE TYPE "SOAStatus" AS ENUM ('BERJALAN', 'DIRENCANAKAN', 'TIDAK_KOMPATIBEL')
 -- CreateEnum
 CREATE TYPE "AudittrailAction" AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 
+-- CreateEnum
+CREATE TYPE "AssetApprovalTLStatus" AS ENUM ('DRAFT', 'MENUNGGU_PERSETUJUAN_FINAL', 'REVISI', 'DISETUJUI');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -51,6 +54,7 @@ CREATE TABLE "Organization" (
 -- CreateTable
 CREATE TABLE "Department" (
     "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "name" TEXT,
     "description" TEXT,
     "isActive" BOOLEAN,
@@ -193,6 +197,29 @@ CREATE TABLE "Asset" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "Asset_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AssetApprovalTL" (
+    "id" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "managerId" TEXT NOT NULL,
+    "message" TEXT,
+    "status" "AssetApprovalTLStatus" NOT NULL DEFAULT 'DRAFT',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "AssetApprovalTL_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "AssetApprovalTLAsset" (
+    "id" TEXT NOT NULL,
+    "assetApprovalTLId" TEXT NOT NULL,
+    "assetId" TEXT NOT NULL,
+
+    CONSTRAINT "AssetApprovalTLAsset_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -427,12 +454,6 @@ CREATE INDEX "RiskCriteria_organizationId_idx" ON "RiskCriteria"("organizationId
 CREATE INDEX "ScaleStatus_riskCriteriaId_idx" ON "ScaleStatus"("riskCriteriaId");
 
 -- CreateIndex
-CREATE INDEX "AssetType_organizationId_idx" ON "AssetType"("organizationId");
-
--- CreateIndex
-CREATE INDEX "AssetClassification_organizationId_idx" ON "AssetClassification"("organizationId");
-
--- CreateIndex
 CREATE INDEX "Asset_organizationId_idx" ON "Asset"("organizationId");
 
 -- CreateIndex
@@ -445,10 +466,19 @@ CREATE INDEX "Asset_classificationId_idx" ON "Asset"("classificationId");
 CREATE INDEX "Asset_ownerId_idx" ON "Asset"("ownerId");
 
 -- CreateIndex
-CREATE INDEX "RiskCategory_organizationId_idx" ON "RiskCategory"("organizationId");
+CREATE INDEX "AssetApprovalTL_organizationId_idx" ON "AssetApprovalTL"("organizationId");
 
 -- CreateIndex
-CREATE INDEX "RiskSource_organizationId_idx" ON "RiskSource"("organizationId");
+CREATE INDEX "AssetApprovalTL_managerId_idx" ON "AssetApprovalTL"("managerId");
+
+-- CreateIndex
+CREATE INDEX "AssetApprovalTLAsset_assetApprovalTLId_idx" ON "AssetApprovalTLAsset"("assetApprovalTLId");
+
+-- CreateIndex
+CREATE INDEX "AssetApprovalTLAsset_assetId_idx" ON "AssetApprovalTLAsset"("assetId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AssetApprovalTLAsset_assetApprovalTLId_assetId_key" ON "AssetApprovalTLAsset"("assetApprovalTLId", "assetId");
 
 -- CreateIndex
 CREATE INDEX "RiskRegister_organizationId_idx" ON "RiskRegister"("organizationId");
@@ -529,9 +559,6 @@ CREATE INDEX "ReassessmentRisk_riskId_idx" ON "ReassessmentRisk"("riskId");
 CREATE INDEX "ReassessmentRisk_managerId_idx" ON "ReassessmentRisk"("managerId");
 
 -- CreateIndex
-CREATE INDEX "ReassessmentRisk_organizationId_idx" ON "ReassessmentRisk"("organizationId");
-
--- CreateIndex
 CREATE INDEX "SOA_organizationId_idx" ON "SOA"("organizationId");
 
 -- CreateIndex
@@ -565,6 +592,9 @@ ALTER TABLE "User" ADD CONSTRAINT "User_organizationId_fkey" FOREIGN KEY ("organ
 ALTER TABLE "User" ADD CONSTRAINT "User_departmentId_fkey" FOREIGN KEY ("departmentId") REFERENCES "Department"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Department" ADD CONSTRAINT "Department_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Context" ADD CONSTRAINT "Context_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -589,12 +619,6 @@ ALTER TABLE "RiskCriteria" ADD CONSTRAINT "RiskCriteria_organizationId_fkey" FOR
 ALTER TABLE "ScaleStatus" ADD CONSTRAINT "ScaleStatus_riskCriteriaId_fkey" FOREIGN KEY ("riskCriteriaId") REFERENCES "RiskCriteria"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AssetType" ADD CONSTRAINT "AssetType_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AssetClassification" ADD CONSTRAINT "AssetClassification_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Asset" ADD CONSTRAINT "Asset_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -607,10 +631,16 @@ ALTER TABLE "Asset" ADD CONSTRAINT "Asset_classificationId_fkey" FOREIGN KEY ("c
 ALTER TABLE "Asset" ADD CONSTRAINT "Asset_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RiskCategory" ADD CONSTRAINT "RiskCategory_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "AssetApprovalTL" ADD CONSTRAINT "AssetApprovalTL_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "RiskSource" ADD CONSTRAINT "RiskSource_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "AssetApprovalTL" ADD CONSTRAINT "AssetApprovalTL_managerId_fkey" FOREIGN KEY ("managerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AssetApprovalTLAsset" ADD CONSTRAINT "AssetApprovalTLAsset_assetApprovalTLId_fkey" FOREIGN KEY ("assetApprovalTLId") REFERENCES "AssetApprovalTL"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AssetApprovalTLAsset" ADD CONSTRAINT "AssetApprovalTLAsset_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "RiskRegister" ADD CONSTRAINT "RiskRegister_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -685,7 +715,7 @@ ALTER TABLE "ReassessmentRisk" ADD CONSTRAINT "ReassessmentRisk_riskId_fkey" FOR
 ALTER TABLE "ReassessmentRisk" ADD CONSTRAINT "ReassessmentRisk_managerId_fkey" FOREIGN KEY ("managerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReassessmentRisk" ADD CONSTRAINT "ReassessmentRisk_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "ReassessmentRisk" ADD CONSTRAINT "ReassessmentRisk_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "SOA" ADD CONSTRAINT "SOA_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE CASCADE ON UPDATE CASCADE;

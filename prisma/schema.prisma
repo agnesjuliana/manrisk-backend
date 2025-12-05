@@ -57,6 +57,13 @@ enum AudittrailAction {
   DELETE
 }
 
+enum AssetApprovalTLStatus {
+  DRAFT
+  MENUNGGU_PERSETUJUAN_FINAL
+  REVISI
+  DISETUJUI
+}
+
 // ============ MAIN MODELS ============
 model User {
   id             String    @id @default(uuid())
@@ -72,6 +79,7 @@ model User {
   organization     Organization?             @relation(fields: [organizationId], references: [id])
   department       Department?               @relation(fields: [departmentId], references: [id])
   ownedAssets      Asset[]                   @relation("AssetOwner")
+  assetApprovalTLs AssetApprovalTL[]         @relation("AssetApprovalManager")
   riskOwned        RiskRegister[]            @relation("RiskOwner")
   riskRevisionLogs RiskRegisterRevisionLog[] @relation("RevisionManager")
   riskApprovalTLs  RiskApprovalTL[]          @relation("RiskApprovalManager")
@@ -103,6 +111,7 @@ model Organization {
   regulations          Regulation[]
   riskCriteria         RiskCriteria[]
   assets               Asset[]
+  assetApprovalTLs     AssetApprovalTL[]
   riskRegisters        RiskRegister[]
   riskApprovalTLs      RiskApprovalTL[]
   controls             Control[]
@@ -268,16 +277,48 @@ model Asset {
   updatedAt        DateTime?
   deletedAt        DateTime?
 
-  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  type           AssetType           @relation(fields: [typeId], references: [id])
-  classification AssetClassification @relation(fields: [classificationId], references: [id])
-  owner          User                @relation("AssetOwner", fields: [ownerId], references: [id])
+  organization   Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  type           AssetType              @relation(fields: [typeId], references: [id])
+  classification AssetClassification    @relation(fields: [classificationId], references: [id])
+  owner          User                   @relation("AssetOwner", fields: [ownerId], references: [id])
   riskRegisters  RiskRegister[]
+  approvalTLs    AssetApprovalTLAsset[]
 
   @@index([organizationId])
   @@index([typeId])
   @@index([classificationId])
   @@index([ownerId])
+}
+
+model AssetApprovalTL {
+  id             String                @id @default(uuid())
+  organizationId String
+  managerId      String
+  message        String?
+  status         AssetApprovalTLStatus @default(DRAFT)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  manager      User                   @relation("AssetApprovalManager", fields: [managerId], references: [id])
+  assets       AssetApprovalTLAsset[]
+
+  @@index([organizationId])
+  @@index([managerId])
+}
+
+model AssetApprovalTLAsset {
+  id                String @id @default(uuid())
+  assetApprovalTLId String
+  assetId           String
+
+  assetApprovalTL AssetApprovalTL @relation(fields: [assetApprovalTLId], references: [id], onDelete: Cascade)
+  asset           Asset           @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@unique([assetApprovalTLId, assetId])
+  @@index([assetApprovalTLId])
+  @@index([assetId])
 }
 
 model RiskCategory {
