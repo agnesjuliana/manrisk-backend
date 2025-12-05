@@ -102,27 +102,27 @@ model Organization {
   servicePriorities    ServicePriority[]
   regulations          Regulation[]
   riskCriteria         RiskCriteria[]
-  assetTypes           AssetType[]
-  assetClassifications AssetClassification[]
   assets               Asset[]
-  riskCategories       RiskCategory[]
-  riskSources          RiskSource[]
   riskRegisters        RiskRegister[]
   riskApprovalTLs      RiskApprovalTL[]
   controls             Control[]
   treatments           Treatment[]
   reassessments        ReassessmentRisk[]
   soas                 SOA[]
+  departments          Department[]
 }
 
 model Department {
-  id          String    @id @default(uuid())
-  name        String?
-  description String?
-  isActive    Boolean?
-  createdAt   DateTime?
-  updatedAt   DateTime?
-  deletedAt   DateTime?
+  id             String    @id @default(uuid())
+  organizationId String
+  name           String?
+  description    String?
+  isActive       Boolean?
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  deletedAt      DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   users User[]
 }
@@ -241,10 +241,7 @@ model AssetType {
   updatedAt      DateTime?
   deletedAt      DateTime?
 
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  assets       Asset[]
-
-  @@index([organizationId])
+  assets Asset[]
 }
 
 model AssetClassification {
@@ -255,10 +252,7 @@ model AssetClassification {
   updatedAt      DateTime?
   deletedAt      DateTime?
 
-  organization Organization? @relation(fields: [organizationId], references: [id])
-  assets       Asset[]
-
-  @@index([organizationId])
+  assets Asset[]
 }
 
 model Asset {
@@ -294,11 +288,8 @@ model RiskCategory {
   updatedAt      DateTime?
   deletedAt      DateTime?
 
-  organization     Organization?             @relation(fields: [organizationId], references: [id])
   riskRegisters    RiskRegister[]
   riskRevisionLogs RiskRegisterRevisionLog[]
-
-  @@index([organizationId])
 }
 
 model RiskSource {
@@ -309,11 +300,8 @@ model RiskSource {
   updatedAt      DateTime?
   deletedAt      DateTime?
 
-  organization     Organization?             @relation(fields: [organizationId], references: [id])
   riskRegisters    RiskRegister[]
   riskRevisionLogs RiskRegisterRevisionLog[]
-
-  @@index([organizationId])
 }
 
 model RiskRegister {
@@ -502,11 +490,10 @@ model ReassessmentRisk {
 
   risk         RiskRegister @relation(fields: [riskId], references: [id], onDelete: Cascade)
   manager      User         @relation("ReassessmentManager", fields: [managerId], references: [id])
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@index([riskId])
   @@index([managerId])
-  @@index([organizationId])
 }
 
 model SOA {
