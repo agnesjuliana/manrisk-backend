@@ -4,7 +4,6 @@ import { StatusCodes } from 'http-status-codes';
 import { CustomResponse } from '../../middleware';
 import { organizationService } from '../../services/organization/organization.service';
 import {
-  type RegisterOrganizationRequest,
   type UpdateOrganizationRequest,
   type CreateDepartmentRequest,
   type UpdateDepartmentRequest,
@@ -14,23 +13,6 @@ import {
 
 export const organizationController = {
   // ===== ORGANIZATION MANAGEMENT =====
-
-  async registerOrganization(request: Request, response: Response, next: NextFunction) {
-    try {
-      const result = await organizationService.registerOrganization(
-        request.body as RegisterOrganizationRequest,
-      );
-      const customResponse = new CustomResponse(
-        StatusCodes.CREATED,
-        'Organisasi dan admin user berhasil dibuat',
-        result,
-      );
-
-      return response.status(StatusCodes.CREATED).json(customResponse.toJSON());
-    } catch (error: any) {
-      return next(error);
-    }
-  },
 
   async getOrganizationProfile(request: Request, response: Response, next: NextFunction) {
     try {
