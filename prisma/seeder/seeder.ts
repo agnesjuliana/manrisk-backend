@@ -1,77 +1,67 @@
+import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-import csv from 'csvtojson';
-import * as bcryptjs from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const salt = bcryptjs.genSaltSync(12);
+async function seedUsers() {
+  console.log('🌱 Seeding users...');
 
-async function users() {
-  const dataUser = await csv().fromFile(__dirname + '/data/users.csv');
-  let users = dataUser.map(user => {
-    return {
-      email: user.email,
-      password: bcryptjs.hashSync(user.password, salt),
-      role: user.role,
-      name: user.name,
-      is_email_verified: user.is_email_verified == 'true' ? true : false,
-    };
-  });
+  const users = [
+    {
+      email: 'admin@example.com',
+      password: 'Admin@123',
+      name: 'Admin User',
+      role: 'ADMIN' as const,
+    },
+    {
+      email: 'manager@example.com',
+      password: 'Manager@123',
+      name: 'Risk Manager',
+      role: 'RISK_MANAGER' as const,
+    },
+    {
+      email: 'owner@example.com',
+      password: 'Owner@123',
+      name: 'Risk Owner',
+      role: 'RISK_OWNER' as const,
+    },
+  ];
 
   for (const user of users) {
-    if (user.role == 'ADMIN') {
-      await prisma.accounts.upsert({
-        where: {
-          email: user.email,
-        },
-        update: {
-          email: user.email,
-          is_email_verified: user.is_email_verified,
-          password: user.password,
-          role: user.role,
-          name: user.name,
-        },
-        create: {
-          email: user.email,
-          is_email_verified: user.is_email_verified,
-          password: user.password,
-          role: user.role,
-          name: user.name,
-        },
-      });
-    } else {
-      await prisma.accounts.upsert({
-        where: {
-          email: user.email,
-        },
-        update: {
-          email: user.email,
-          is_email_verified: user.is_email_verified,
-          password: user.password,
-          role: user.role,
-          name: user.name,
-        },
-        create: {
-          email: user.email,
-          is_email_verified: user.is_email_verified,
-          password: user.password,
-          role: user.role,
-          name: user.name,
-        },
-      });
+    const existingUser = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    if (existingUser) {
+      console.log(`✓ User ${user.email} sudah ada`);
+      continue;
     }
+
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
+    await prisma.user.create({
+      data: {
+        email: user.email,
+        password: hashedPassword,
+        name: user.name,
+        role: user.role,
+      },
+    });
+
+    console.log(`✓ User ${user.email} berhasil dibuat`);
   }
 }
 
-const main = async () => {
-  await users();
-};
-
-main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+async function main() {
+  try {
+    await seedUsers();
+    console.log('✅ Seeding selesai');
+  } catch (error) {
+    console.error('❌ Error seeding:', error);
+    throw error;
+  } finally {
     await prisma.$disconnect();
-  });
+  }
+}
+
+main();

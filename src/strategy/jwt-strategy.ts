@@ -4,7 +4,7 @@ import passport from 'passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { JWT } from '../config/jwt.config';
-import { Accounts } from '../repositories';
+import { userRepository } from '../repositories/user';
 
 const jwtStrategy = new Strategy(
   {
@@ -13,8 +13,7 @@ const jwtStrategy = new Strategy(
   },
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async (payload, done) => {
-    const email = payload.email;
-    const user = await Accounts.findAccountByEmail(email);
+    const user = await userRepository.getUserById(payload.id);
 
     if (user) {
       return done(null, user);
