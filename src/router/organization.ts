@@ -5,8 +5,7 @@ import { type Router } from 'express';
 import express from 'express';
 
 import { organizationController } from '../controllers/organization';
-import { validate, checkRole } from '../middleware';
-import passport from '../strategy/jwt-strategy';
+import { validate, authenticate, hasAccess } from '../middleware';
 import { upsertOrganizationJoiSchema } from '../validators';
 
 const router: Router = express.Router();
@@ -14,8 +13,8 @@ const router: Router = express.Router();
 // POST /organizations - Upsert organization (Protected, ADMIN only)
 router.post(
   '',
-  passport.authenticate('jwt', { session: false }),
-  checkRole('ADMIN'),
+  authenticate,
+  hasAccess(['ADMIN']),
   validate(upsertOrganizationJoiSchema),
   organizationController.upsertOrganization,
 );

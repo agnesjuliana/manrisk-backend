@@ -5,8 +5,7 @@ import { type Router } from 'express';
 import express from 'express';
 
 import { userController } from '../controllers/user';
-import { validate } from '../middleware';
-import passport from '../strategy/jwt-strategy';
+import { validate, authenticate } from '../middleware';
 import { registerUserJoiSchema, loginUserJoiSchema } from '../validators';
 
 const router: Router = express.Router();
@@ -20,7 +19,7 @@ router.post('/login', validate(loginUserJoiSchema), userController.loginUser);
 // GET /users/me - Get current user profile from JWT token
 router.get(
   '/me',
-  passport.authenticate('jwt', { session: false }),
+  authenticate,
   userController.getCurrentUserProfile,
 );
 
