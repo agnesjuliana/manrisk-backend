@@ -92,6 +92,8 @@ export const userRepository = {
     data: {
       name?: string;
       email?: string;
+      organizationId?: string;
+      departmentId?: string;
     },
   ): Promise<UserProfile | null> {
     const user = await prisma.user.update({

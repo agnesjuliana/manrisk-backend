@@ -5,6 +5,7 @@ import { type Router } from 'express';
 import express from 'express';
 
 import { organizationController } from '../controllers';
+import { organizationAuthController } from '../controllers/organization/auth-organization.controller';
 import { validate } from '../middleware';
 import passport from '../strategy/jwt-strategy';
 import {
@@ -16,11 +17,12 @@ import {
 
 const router: Router = express.Router();
 
-// Register organization dengan admin user
+// POST /organizations/register - Register/upsert organization (Protected, Admin only)
 router.post(
   '/register',
+  passport.authenticate('jwt', { session: false }),
   validate(registerOrganizationJoiSchema),
-  organizationController.registerOrganization,
+  organizationAuthController.registerOrganization,
 );
 
 // Get organization profile

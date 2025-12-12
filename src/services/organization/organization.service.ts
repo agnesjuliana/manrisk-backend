@@ -10,55 +10,9 @@ import {
   type CreateUserRequest,
   type UpdateUserRequest,
 } from '../../validators/organization/manage-user.validator';
-import { type RegisterOrganizationRequest } from '../../validators/organization/register-organization.validator';
 import { type UpdateOrganizationRequest } from '../../validators/organization/update-organization.validator';
 
-/**
- * Organization Service
- * Business logic untuk organization management
- */
 export const organizationService = {
-  /**
-   * Register organization baru dengan admin user
-   */
-  async registerOrganization(data: RegisterOrganizationRequest) {
-    const existingUser = await organizationRepository.getUserByEmail(data.adminEmail);
-
-    if (existingUser) {
-      throw new CustomError(StatusCodes.CONFLICT, 'Email sudah terdaftar');
-    }
-
-    const organization = await organizationRepository.createOrganization({
-      name: data.name,
-      address: data.address,
-      email: data.email,
-      noTelp: data.noTelp,
-    });
-
-    const adminUser = await organizationRepository.createUser({
-      email: data.adminEmail,
-      name: data.adminName,
-      password: data.adminPassword,
-      role: 'ADMIN',
-      organization: {
-        connect: { id: organization.id },
-      },
-    });
-
-    return {
-      organization,
-      adminUser: {
-        id: adminUser.id,
-        email: adminUser.email,
-        name: adminUser.name,
-        role: adminUser.role,
-      },
-    };
-  },
-
-  /**
-   * Get organization profile
-   */
   async getOrganizationProfile(organizationId: string) {
     const organization = await organizationRepository.getOrganizationWithDetails(organizationId);
 
