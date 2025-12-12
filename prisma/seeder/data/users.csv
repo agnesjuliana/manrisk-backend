@@ -1,4 +1,4 @@
-name,email,password,role,is_email_verified
-admin,admin@gmail.com,Password123!,ADMIN,true
-user,user@gmail.com,Password123!,USER,true
-user,user2@gmail.com,Password123!,USER,true
+email,password,name,role
+admin@example.com,Password123!,Admin User,ADMIN
+manager@example.com,Password123!,Risk Manager,RISK_MANAGER
+owner@example.com,Password123!,Risk Owner,RISK_OWNER

@@ -1,31 +1,28 @@
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { parse } from 'csv-parse/sync';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+interface UserSeedData {
+  email: string;
+  password: string;
+  name: string;
+  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER';
+}
+
 async function seedUsers() {
   console.log('🌱 Seeding users...');
 
-  const users = [
-    {
-      email: 'admin@example.com',
-      password: 'Admin@123',
-      name: 'Admin User',
-      role: 'ADMIN' as const,
-    },
-    {
-      email: 'manager@example.com',
-      password: 'Manager@123',
-      name: 'Risk Manager',
-      role: 'RISK_MANAGER' as const,
-    },
-    {
-      email: 'owner@example.com',
-      password: 'Owner@123',
-      name: 'Risk Owner',
-      role: 'RISK_OWNER' as const,
-    },
-  ];
+  const csvPath = path.join(__dirname, 'data', 'users.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const users = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as UserSeedData[];
 
   for (const user of users) {
     const existingUser = await prisma.user.findUnique({
