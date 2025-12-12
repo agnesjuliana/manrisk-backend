@@ -1,5 +1,5 @@
 import { type Role } from '@prisma/client';
-import { type NextFunction, type Response } from 'express';
+import { type NextFunction, type Request, type Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { type IRequestUser } from './authentication.middleware';
@@ -268,3 +268,34 @@ const validateDepartmentAccessMiddleware =
   };
 
 export const validateDepartmentAccess = validateDepartmentAccessMiddleware;
+
+/**
+ * Middleware to check if user has a specific role
+ * Usage: app.post('/path', checkRole('ADMIN'), controller.action)
+ */
+const checkRoleMiddleware = (allowedRoles: Role | Role[]) =>
+  (request: Request, response: Response, next: NextFunction): void => {
+    const userRole = (request.user as any)?.role;
+    const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+
+    if (!userRole) {
+      next(new CustomError(StatusCodes.UNAUTHORIZED, 'User role not found'));
+
+      return;
+    }
+
+    if (!rolesArray.includes(userRole)) {
+      next(
+        new CustomError(
+          StatusCodes.FORBIDDEN,
+          `Access denied. Required role: ${rolesArray.join(' or ')}`,
+        ),
+      );
+
+      return;
+    }
+
+    next();
+  };
+
+export const checkRole = checkRoleMiddleware;

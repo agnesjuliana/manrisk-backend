@@ -5,12 +5,19 @@ export interface RegisterOrganizationRequest {
   noTelp: string;
 }
 
+export interface UpsertOrganizationRequest {
+  name: string;
+  address: string;
+  email: string;
+  telp: string;
+}
+
 export interface OrganizationResponse {
   id: string;
   name: string;
   address: string;
   email: string;
-  noTelp: string;
+  noTelp?: string;
   createdAt: Date;
   updatedAt?: Date;
 }
