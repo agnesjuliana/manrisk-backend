@@ -17,11 +17,11 @@ router.post('/register', validate(registerUserJoiSchema), userController.registe
 // POST /users/login - Login user
 router.post('/login', validate(loginUserJoiSchema), userController.loginUser);
 
-// GET /users/:userId - Get user profile
+// GET /users/me - Get current user profile from JWT token
 router.get(
-  '/:userId',
+  '/me',
   passport.authenticate('jwt', { session: false }),
-  userController.getUserProfile,
+  userController.getCurrentUserProfile,
 );
 
 export default router;

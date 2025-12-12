@@ -48,4 +48,17 @@ export const userController = {
       return next(error);
     }
   },
+
+  async getCurrentUserProfile(request: Request, response: Response, next: NextFunction) {
+    try {
+      const user = request.user as { id: string };
+      const profile = await userService.getUserProfile(user.id);
+
+      const customResponse = new CustomResponse(StatusCodes.OK, 'Profil user', profile);
+
+      return response.status(StatusCodes.OK).json(customResponse.toJSON());
+    } catch (error: any) {
+      return next(error);
+    }
+  },
 };
