@@ -5,15 +5,7 @@ import { CustomResponse } from '../../middleware';
 import { type RegisterUserRequest, type LoginUserRequest } from '../../models/user';
 import { userService } from '../../services/user';
 
-/**
- * User Controller
- * HTTP request handlers untuk user endpoints
- */
 export const userController = {
-  /**
-   * POST /users/register
-   * Register user baru
-   */
   async registerUser(request: Request, response: Response, next: NextFunction) {
     try {
       const registerData = request.body as RegisterUserRequest;
@@ -31,10 +23,6 @@ export const userController = {
     }
   },
 
-  /**
-   * POST /users/login
-   * Login user
-   */
   async loginUser(request: Request, response: Response, next: NextFunction) {
     try {
       const loginData = request.body as LoginUserRequest;
@@ -48,10 +36,6 @@ export const userController = {
     }
   },
 
-  /**
-   * GET /users/:userId
-   * Get user profile
-   */
   async getUserProfile(request: Request, response: Response, next: NextFunction) {
     try {
       const { userId } = request.params;

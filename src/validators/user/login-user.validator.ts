@@ -1,8 +1,5 @@
 import Joi from 'joi';
 
-/**
- * Joi Schema untuk login user
- */
 export const loginUserJoiSchema = Joi.object({
   email: Joi.string()
     .email()

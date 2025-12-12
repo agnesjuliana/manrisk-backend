@@ -16,6 +16,12 @@ export interface UserResponse {
   createdAt: Date;
 }
 
+export interface LoginUserResponse {
+  user: UserResponse;
+  token: string;
+  expiresIn: number;
+}
+
 export interface UserProfile {
   id: string;
   email: string;

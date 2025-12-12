@@ -1,9 +1,5 @@
 import Joi from 'joi';
 
-/**
- * Joi Schema untuk register user baru
- * Validasi: email format, password strength (min 8 char), name min 3 char
- */
 export const registerUserJoiSchema = Joi.object({
   email: Joi.string()
     .email()

@@ -2,22 +2,11 @@ import bcrypt from 'bcryptjs';
 import { StatusCodes } from 'http-status-codes';
 
 import { CustomError } from '../../middleware';
-import { type RegisterUserRequest, type UserResponse } from '../../models/user';
+import { type RegisterUserRequest, type UserResponse, type LoginUserResponse } from '../../models/user';
 import { userRepository } from '../../repositories/user';
+import { generateAccessToken } from '../../utils/JwtToken';
 
-/**
- * User Service
- * Business logic layer untuk user management
- */
 export const userService = {
-  /**
-   * Register user baru
-   * - Validasi email belum terdaftar
-   * - Hash password
-   * - Create user di database
-   * @param data Register request data
-   * @returns User response
-   */
   async registerUser(data: RegisterUserRequest): Promise<UserResponse> {
     // Check email already exists
     const emailExists = await userRepository.emailExists(data.email);
@@ -35,16 +24,7 @@ export const userService = {
     return user;
   },
 
-  /**
-   * Login user
-   * - Validasi email terdaftar
-   * - Validasi password cocok
-   * - Return user info (tanpa password)
-   * @param email User email
-   * @param password User password (plain text)
-   * @returns User response
-   */
-  async loginUser(email: string, password: string): Promise<UserResponse> {
+  async loginUser(email: string, password: string): Promise<LoginUserResponse> {
     // Get user dengan password
     const user = await userRepository.getUserWithPassword(email);
 
@@ -59,21 +39,27 @@ export const userService = {
       throw new CustomError(StatusCodes.UNAUTHORIZED, 'Email atau password salah');
     }
 
-    // Return user response (tanpa password)
-    return {
+    // Generate JWT token dengan payload: id, role, email
+    const token = generateAccessToken({
       id: user.id,
-      email: user.email,
-      name: user.name,
       role: user.role,
-      createdAt: user.createdAt,
+      email: user.email,
+    });
+
+    // Return user response + token
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+      token,
+      expiresIn: 24 * 60 * 60, // 24 hours in seconds
     };
   },
 
-  /**
-   * Get user profile by ID
-   * @param userId User ID
-   * @returns User profile
-   */
   async getUserProfile(userId: string) {
     const user = await userRepository.getUserById(userId);
 

@@ -11,19 +11,11 @@ import { registerUserJoiSchema, loginUserJoiSchema } from '../validators';
 
 const router: Router = express.Router();
 
-/**
- * Public Routes (No Authentication)
- */
-
 // POST /users/register - Register user baru
 router.post('/register', validate(registerUserJoiSchema), userController.registerUser);
 
 // POST /users/login - Login user
 router.post('/login', validate(loginUserJoiSchema), userController.loginUser);
-
-/**
- * Protected Routes (Require Authentication)
- */
 
 // GET /users/:userId - Get user profile
 router.get(
