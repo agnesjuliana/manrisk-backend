@@ -20,7 +20,7 @@
     "tsc": "tsc -p .",
     "start": "dotenv -e .env.production -- node dist/index.js",
     "start:prod": "pnpm run start",
-    "// prisma --------": "----------------------------------------------",
+    "prisma:generate": "dotenv -e .env.development -- npx prisma generate",
     "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --schema ./prisma/schema.prisma",
     "migrate:prod": "dotenv -e .env.production -- npx prisma migrate deploy --schema ./prisma/schema.prisma",
     "migrate:dev:reset": "dotenv -e .env.development -- npx prisma migrate reset --schema ./prisma/schema.prisma",
@@ -32,7 +32,6 @@
     "seed:demo:compiled": "dotenv -e .env -- node ./dist/prisma/seeder/seeder-demo.js",
     "studio:dev": "dotenv -e .env.development -- npx prisma studio",
     "studio:prod": "dotenv -e .env -- npx prisma studio",
-    "// quality -------": "----------------------------------------------",
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"{src,apps,libs,test,prisma}/**/*.{ts,tsx,json,md,yml,yaml}\""
@@ -85,6 +84,7 @@
     "nodemailer": "^7.0.11",
     "nodemailer-mailgun-transport": "^2.1.5",
     "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1"
+    "passport-jwt": "^4.0.1",
+    "zod": "^4.1.13"
   }
 }
