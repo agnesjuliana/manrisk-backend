@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "Role" ADD VALUE 'TOP_MANAGEMENT';

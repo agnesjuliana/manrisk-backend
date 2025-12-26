@@ -12,7 +12,7 @@ export interface UserResponse {
   id: string;
   email: string;
   name: string;
-  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER';
+  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER' | 'TOP_MANAGEMENT';
   createdAt: Date;
 }
 
@@ -26,7 +26,7 @@ export interface UserProfile {
   id: string;
   email: string;
   name: string;
-  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER';
+  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER' | 'TOP_MANAGEMENT';
   organizationId?: string;
   departmentId?: string;
   createdAt: Date;
