@@ -31,6 +31,13 @@ export interface UserProfile {
   departmentId?: string;
   createdAt: Date;
   updatedAt?: Date;
+  organization?: {
+    id: string;
+    name: string;
+    address: string;
+    email: string;
+    noTelp: string;
+  } | null;
 }
 
 export interface LoginUserRequest {

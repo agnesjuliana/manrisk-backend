@@ -56,6 +56,15 @@ export const userRepository = {
         departmentId: true,
         createdAt: true,
         updatedAt: true,
+        organization: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            email: true,
+            noTelp: true,
+          },
+        },
       },
     });
 
