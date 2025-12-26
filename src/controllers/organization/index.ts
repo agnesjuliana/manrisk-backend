@@ -1,3 +1,4 @@
 export * from './organization.controller';
-export { departmentController } from './department.controller';
+export * from './department.controller';
+export * from './user-management.controller';
 

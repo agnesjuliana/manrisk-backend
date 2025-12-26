@@ -27,7 +27,7 @@ export const calculatePaginationMetadata = (
 
 export const calculateSkip = (page: number, perPage: number): number => (page - 1) * perPage;
 
-export const validatePaginationParams = (page: number, perPage: number): { page: number; perPage: number } => {
+export const validatePaginationParameters = (page: number, perPage: number): { page: number; perPage: number } => {
   const validPage = Math.max(1, page || 1);
   const validPerPage = Math.max(1, Math.min(100, perPage || 10));
 
@@ -36,3 +36,6 @@ export const validatePaginationParams = (page: number, perPage: number): { page:
     perPage: validPerPage,
   };
 };
+
+// Backward compatibility export
+export const validatePaginationParams = validatePaginationParameters;
