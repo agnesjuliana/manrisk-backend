@@ -1,1 +1,3 @@
-export * from './organization';
+export * from './organization.controller';
+export { departmentController } from './department.controller';
+
