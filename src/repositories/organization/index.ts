@@ -5,4 +5,5 @@ export * from './context.repository';
 export * from './external-stakeholder.repository';
 export * from './cia-objective.repository';
 export * from './regulation.repository';
+export * from './risk-criteria.repository';
 

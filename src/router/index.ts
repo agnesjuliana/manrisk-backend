@@ -8,6 +8,7 @@ import DepartmentRoutes from './department';
 import ExternalStakeholderRoutes from './external-stakeholder';
 import OrganizationRoutes from './organization';
 import { regulationRouter } from './regulation';
+import riskCriteriaRouter from './risk-criteria';
 import UserManagementRoutes from './user-management';
 import UserRoutes from './user.router';
 
@@ -19,6 +20,7 @@ router.use('/external-stakeholders', ExternalStakeholderRoutes);
 router.use('/cia', CiaObjectiveRoutes);
 router.use('/user-management', UserManagementRoutes);
 router.use('/regulations', regulationRouter);
+router.use('/risk-criteria', riskCriteriaRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;
