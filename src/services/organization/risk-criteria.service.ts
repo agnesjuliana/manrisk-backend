@@ -5,6 +5,10 @@ import {
 import { riskCriteriaRepository } from '../../repositories/organization/risk-criteria.repository';
 
 export const riskCriteriaService = {
+  async getRiskCriteria(organizationId: string): Promise<any> {
+    return await riskCriteriaRepository.getRiskCriteria(organizationId);
+  },
+
   async upsertRiskCriteria(
     organizationId: string,
     data: CreateRiskCriteriaRequest,

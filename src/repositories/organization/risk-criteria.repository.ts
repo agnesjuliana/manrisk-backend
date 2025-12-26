@@ -2,6 +2,7 @@ import prisma from '../../config/prisma';
 import {
   type CreateRiskCriteriaRequest,
   type RiskCriteriaResponse,
+  type ScaleStatusDetail,
 } from '../../models/organization/risk-criteria.model';
 
 const mapToRiskCriteriaResponse = (riskCriteria: any): RiskCriteriaResponse => ({
@@ -15,6 +16,48 @@ const mapToRiskCriteriaResponse = (riskCriteria: any): RiskCriteriaResponse => (
 });
 
 export const riskCriteriaRepository = {
+  async getRiskCriteria(organizationId: string): Promise<any> {
+    const riskCriteria = await prisma.riskCriteria.findFirst({
+      where: {
+        organizationId,
+        deletedAt: null,
+      },
+      include: {
+        scaleStatuses: {
+          where: {
+            deletedAt: null,
+          },
+          orderBy: {
+            level: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!riskCriteria) {
+      return null;
+    }
+
+    const scaleStatuses: ScaleStatusDetail[] = riskCriteria.scaleStatuses.map((ss) => ({
+      id: ss.id,
+      level: ss.level,
+      title: ss.title,
+      createdAt: ss.createdAt,
+      updatedAt: ss.updatedAt,
+    }));
+
+    return {
+      id: riskCriteria.id,
+      organizationId: riskCriteria.organizationId,
+      isFMEA: riskCriteria.isFMEA,
+      scale: riskCriteria.scale,
+      threshold: riskCriteria.threshold,
+      createdAt: riskCriteria.createdAt,
+      updatedAt: riskCriteria.updatedAt,
+      scaleStatuses,
+    };
+  },
+
   async createRiskCriteria(
     organizationId: string,
     data: CreateRiskCriteriaRequest,
