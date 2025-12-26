@@ -4,4 +4,5 @@ export * from './user-management.controller';
 export * from './context.controller';
 export * from './external-stakeholder.controller';
 export * from './cia-objective.controller';
+export * from './regulation.controller';
 

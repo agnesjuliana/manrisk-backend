@@ -7,6 +7,7 @@ import ContextRoutes from './context';
 import DepartmentRoutes from './department';
 import ExternalStakeholderRoutes from './external-stakeholder';
 import OrganizationRoutes from './organization';
+import { regulationRouter } from './regulation';
 import UserManagementRoutes from './user-management';
 import UserRoutes from './user.router';
 
@@ -17,6 +18,7 @@ router.use('/contexts', ContextRoutes);
 router.use('/external-stakeholders', ExternalStakeholderRoutes);
 router.use('/cia', CiaObjectiveRoutes);
 router.use('/user-management', UserManagementRoutes);
+router.use('/regulations', regulationRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;

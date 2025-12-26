@@ -4,4 +4,5 @@ export * from './user-management.service';
 export * from './context.service';
 export * from './external-stakeholder.service';
 export * from './cia-objective.service';
+export * from './regulation.service';
 
