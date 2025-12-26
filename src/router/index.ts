@@ -4,6 +4,7 @@ const router: Router = express.Router();
 
 import ContextRoutes from './context';
 import DepartmentRoutes from './department';
+import ExternalStakeholderRoutes from './external-stakeholder';
 import OrganizationRoutes from './organization';
 import UserRoutes from './user.router';
 import UserManagementRoutes from './user-management';
@@ -12,6 +13,7 @@ router.use('/users', UserRoutes);
 router.use('/organizations', OrganizationRoutes);
 router.use('/departments', DepartmentRoutes);
 router.use('/contexts', ContextRoutes);
+router.use('/external-stakeholders', ExternalStakeholderRoutes);
 router.use('/user-management', UserManagementRoutes);
 
 // eslint-disable-next-line import/no-default-export
