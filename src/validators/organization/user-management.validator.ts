@@ -16,7 +16,7 @@ export const createUserManagementJoiSchema = Joi.object({
     'any.required': 'Password wajib diisi',
   }),
   role: Joi.string()
-    .valid('ADMIN', 'RISK_MANAGER', 'RISK_OWNER')
+    .valid('ADMIN', 'RISK_MANAGER', 'RISK_OWNER', 'TOP_MANAGEMENT')
     .required()
     .messages({
       'any.only': 'Role harus salah satu dari: ADMIN, RISK_MANAGER, RISK_OWNER',

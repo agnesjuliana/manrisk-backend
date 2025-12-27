@@ -1,7 +1,7 @@
 export interface CreateRiskCriteriaRequest {
-  isFMEA: boolean;
-  scale: number;
-  threshold: number;
+  isFMEA?: boolean;
+  scale?: number;
+  threshold?: number;
 }
 
 export interface UpdateRiskCriteriaRequest {

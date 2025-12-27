@@ -87,25 +87,35 @@ export const riskCriteriaRepository = {
     });
 
     if (existingRiskCriteria) {
-      // Update existing
+      // Update existing - only update fields that are provided
+      const updateData: any = {};
+
+      if (data.isFMEA !== undefined) {
+        updateData.isFMEA = data.isFMEA;
+      }
+
+      if (data.scale !== undefined) {
+        updateData.scale = data.scale;
+      }
+
+      if (data.threshold !== undefined) {
+        updateData.threshold = data.threshold;
+      }
+
       const updatedRiskCriteria = await prisma.riskCriteria.update({
         where: { id: existingRiskCriteria.id },
-        data: {
-          isFMEA: data.isFMEA,
-          scale: data.scale,
-          threshold: data.threshold,
-        },
+        data: updateData,
       });
 
       return mapToRiskCriteriaResponse(updatedRiskCriteria);
     } else {
-      // Create new
+      // Create new with default values if not provided
       const riskCriteria = await prisma.riskCriteria.create({
         data: {
           organizationId,
-          isFMEA: data.isFMEA,
-          scale: data.scale,
-          threshold: data.threshold,
+          isFMEA: data.isFMEA ?? false,
+          scale: data.scale ?? 5,
+          threshold: data.threshold ?? 10,
         },
       });
 

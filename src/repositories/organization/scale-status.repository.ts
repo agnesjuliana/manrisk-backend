@@ -46,6 +46,12 @@ export const scaleStatusRepository = {
     const newScale = data.scale;
     const currentMaxLevel = currentScaleStatuses.length;
 
+    // Update scale in RiskCriteria table
+    await prisma.riskCriteria.update({
+      where: { id: riskCriteria.id },
+      data: { scale: newScale },
+    });
+
     if (newScale < currentMaxLevel) {
       // Delete records with level > newScale
       await prisma.scaleStatus.deleteMany({
