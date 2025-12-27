@@ -11,30 +11,60 @@ export async function createAsset(
   userId: string,
   data: CreateAssetRequest,
 ): Promise<AssetResponse> {
-  // Handle type - create if not exists
+  // Handle type - check if exists or create if not
   let typeId = data.type.id;
 
   if (!typeId) {
-    const newType = await prisma.assetType.create({
-      data: {
+    // Check if type with same title exists in org or in public (null organizationId)
+    const existingType = await prisma.assetType.findFirst({
+      where: {
         title: data.type.name,
-        organizationId,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
       },
     });
-    typeId = newType.id;
+
+    if (existingType) {
+      typeId = existingType.id;
+    } else {
+      const newType = await prisma.assetType.create({
+        data: {
+          title: data.type.name,
+          organizationId,
+        },
+      });
+      typeId = newType.id;
+    }
   }
 
-  // Handle classification - create if not exists
+  // Handle classification - check if exists or create if not
   let classificationId = data.classification.id;
 
   if (!classificationId) {
-    const newClassification = await prisma.assetClassification.create({
-      data: {
+    // Check if classification with same title exists in org or in public (null organizationId)
+    const existingClassification = await prisma.assetClassification.findFirst({
+      where: {
         title: data.classification.name,
-        organizationId,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
       },
     });
-    classificationId = newClassification.id;
+
+    if (existingClassification) {
+      classificationId = existingClassification.id;
+    } else {
+      const newClassification = await prisma.assetClassification.create({
+        data: {
+          title: data.classification.name,
+          organizationId,
+        },
+      });
+      classificationId = newClassification.id;
+    }
   }
 
   // Create asset
@@ -192,13 +222,81 @@ export async function updateAsset(
   assetId: string,
   data: UpdateAssetRequest,
 ): Promise<AssetResponse> {
+  // Get current asset to know if we need to verify organization
+  const currentAsset = await prisma.asset.findFirst({
+    where: {
+      id: assetId,
+      organizationId,
+    },
+  });
+
+  if (!currentAsset) {
+    throw new Error('Asset not found');
+  }
+
+  // Handle type - check if exists or create if not
+  let typeId = data.typeId;
+
+  if (data.type && !data.type.id) {
+    // Check if type with same title exists in org or in public (null organizationId)
+    const existingType = await prisma.assetType.findFirst({
+      where: {
+        title: data.type.name,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
+      },
+    });
+
+    if (existingType) {
+      typeId = existingType.id;
+    } else {
+      const newType = await prisma.assetType.create({
+        data: {
+          title: data.type.name,
+          organizationId,
+        },
+      });
+      typeId = newType.id;
+    }
+  }
+
+  // Handle classification - check if exists or create if not
+  let classificationId = data.classificationId;
+
+  if (data.classification && !data.classification.id) {
+    // Check if classification with same title exists in org or in public (null organizationId)
+    const existingClassification = await prisma.assetClassification.findFirst({
+      where: {
+        title: data.classification.name,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
+      },
+    });
+
+    if (existingClassification) {
+      classificationId = existingClassification.id;
+    } else {
+      const newClassification = await prisma.assetClassification.create({
+        data: {
+          title: data.classification.name,
+          organizationId,
+        },
+      });
+      classificationId = newClassification.id;
+    }
+  }
+
   // Filter out undefined values
   const updateData: any = {};
   if (data.name !== undefined) updateData.name = data.name;
   if (data.location !== undefined) updateData.location = data.location;
   if (data.ownerId !== undefined) updateData.ownerId = data.ownerId;
-  if (data.typeId !== undefined) updateData.typeId = data.typeId;
-  if (data.classificationId !== undefined) updateData.classificationId = data.classificationId;
+  if (typeId !== undefined) updateData.typeId = typeId;
+  if (classificationId !== undefined) updateData.classificationId = classificationId;
   if (data.status !== undefined) updateData.status = data.status;
 
   const asset = await prisma.asset.update({

@@ -20,7 +20,9 @@ export interface UpdateAssetRequest {
   location?: string;
   ownerId?: string;
   typeId?: string;
+  type?: AssetTypeInput;
   classificationId?: string;
+  classification?: AssetClassificationInput;
   status?: string;
 }
 

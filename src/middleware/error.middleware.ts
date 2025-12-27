@@ -12,7 +12,7 @@ export const ErrorHandler = (
   let errorMessage = error.message || 'Internal server error';
 
   // Handle Prisma errors
-  if (error.code?.startsWith('P')) {
+  if (typeof error.code === 'string' && error.code.startsWith('P')) {
     // P2002 = Unique constraint failed
     if (error.code === 'P2002') {
       errorStatus = StatusCodes.BAD_REQUEST;

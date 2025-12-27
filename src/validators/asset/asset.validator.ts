@@ -35,7 +35,21 @@ export const updateAssetSchema = Joi.object({
   location: Joi.string().optional().allow(null, ''),
   ownerId: Joi.string().optional(),
   typeId: Joi.string().optional(),
+  type: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama type asset tidak boleh kosong',
+      'any.required': 'Nama type asset harus diisi',
+    }),
+  }).optional(),
   classificationId: Joi.string().optional(),
+  classification: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama klasifikasi asset tidak boleh kosong',
+      'any.required': 'Nama klasifikasi asset harus diisi',
+    }),
+  }).optional(),
   status: Joi.string()
     .optional()
     .valid(
