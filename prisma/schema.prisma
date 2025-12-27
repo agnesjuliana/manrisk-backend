@@ -61,9 +61,8 @@ enum AudittrailAction {
 }
 
 enum AssetApprovalTLStatus {
-  DRAFT
   MENUNGGU_PERSETUJUAN_FINAL
-  REVISI
+  DITOLAK
   DISETUJUI
 }
 
@@ -301,7 +300,7 @@ model AssetApprovalTL {
   organizationId String
   managerId      String
   message        String?
-  status         AssetApprovalTLStatus @default(DRAFT)
+  status         AssetApprovalTLStatus @default(MENUNGGU_PERSETUJUAN_FINAL)
   createdAt      DateTime              @default(now())
   updatedAt      DateTime?
   deletedAt      DateTime?
