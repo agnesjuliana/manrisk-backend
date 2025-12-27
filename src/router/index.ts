@@ -2,6 +2,7 @@ import express, { type Router } from 'express';
 
 const router: Router = express.Router();
 
+import assetRouter from './asset';
 import CiaObjectiveRoutes from './cia-objective';
 import ContextRoutes from './context';
 import DepartmentRoutes from './department';
@@ -21,6 +22,7 @@ router.use('/cia', CiaObjectiveRoutes);
 router.use('/user-management', UserManagementRoutes);
 router.use('/regulations', regulationRouter);
 router.use('/risk-criteria', riskCriteriaRouter);
+router.use('/assets', assetRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;

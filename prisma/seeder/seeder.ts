@@ -34,6 +34,24 @@ interface OrganizationSeedData {
   deletedAt?: string;
 }
 
+interface AssetTypeSeedData {
+  id?: string;
+  organizationId?: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+interface AssetClassificationSeedData {
+  id?: string;
+  organizationId?: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
 async function seedOrganizations() {
   console.log('🌱 Seeding organizations...');
 
@@ -145,11 +163,67 @@ async function seedContexts() {
   }
 }
 
+async function seedAssetTypes() {
+  console.log('🌱 Seeding asset types...');
+
+  const csvPath = path.join(__dirname, 'data', 'asset-types.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const assetTypes = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as AssetTypeSeedData[];
+
+  for (const assetType of assetTypes) {
+    await prisma.assetType.create({
+      data: {
+        ...(assetType.id && { id: assetType.id }),
+        organizationId: assetType.organizationId || null,
+        title: assetType.title,
+        createdAt: new Date(assetType.createdAt),
+        updatedAt: new Date(assetType.updatedAt),
+        deletedAt: assetType.deletedAt ? new Date(assetType.deletedAt) : null,
+      },
+    });
+
+    console.log(`✓ Asset Type ${assetType.title} berhasil dibuat`);
+  }
+}
+
+async function seedAssetClassifications() {
+  console.log('🌱 Seeding asset classifications...');
+
+  const csvPath = path.join(__dirname, 'data', 'asset-classifications.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const assetClassifications = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as AssetClassificationSeedData[];
+
+  for (const assetClassification of assetClassifications) {
+    await prisma.assetClassification.create({
+      data: {
+        ...(assetClassification.id && { id: assetClassification.id }),
+        organizationId: assetClassification.organizationId || null,
+        title: assetClassification.title,
+        createdAt: new Date(assetClassification.createdAt),
+        updatedAt: new Date(assetClassification.updatedAt),
+        deletedAt: assetClassification.deletedAt ? new Date(assetClassification.deletedAt) : null,
+      },
+    });
+
+    console.log(`✓ Asset Classification ${assetClassification.title} berhasil dibuat`);
+  }
+}
+
 async function main() {
   try {
-    await seedOrganizations();
-    await seedUsers();
-    await seedContexts();
+    // await seedOrganizations();
+    // await seedUsers();
+    // await seedContexts();
+    await seedAssetTypes();
+    await seedAssetClassifications();
     console.log('✅ Seeding selesai');
   } catch (error) {
     console.error('❌ Error seeding:', error);
