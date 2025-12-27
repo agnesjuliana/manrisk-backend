@@ -33,13 +33,33 @@ export const assetController = {
 
   async getAssets(request: Request, response: Response, next: NextFunction) {
     try {
-      const user = request.user as { id: string; organizationId: string };
-      const { page = 1, perPage = 10 } = request.query;
+      const user = request.user as {
+        id: string;
+        organizationId: string;
+        role?: string;
+        departmentId?: string;
+      };
+      const { page = 1, perPage = 10, status } = request.query;
 
       const pageNumber = Number.parseInt(page as string, 10) || 1;
       const perPageNumber = Number.parseInt(perPage as string, 10) || 10;
 
-      const result = await getAssetsService(user.organizationId, pageNumber, perPageNumber);
+      // Parse status filter - can be single string or array of strings
+      let statusFilter: string[] | undefined;
+      if (status) {
+        statusFilter = Array.isArray(status)
+          ? (status as string[])
+          : (status as string).split(',').map((s) => s.trim());
+      }
+
+      const result = await getAssetsService(
+        user.organizationId,
+        pageNumber,
+        perPageNumber,
+        user.role,
+        user.departmentId,
+        statusFilter,
+      );
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,

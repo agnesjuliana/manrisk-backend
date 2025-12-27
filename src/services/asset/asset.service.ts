@@ -24,13 +24,16 @@ export async function getAssetsService(
   organizationId: string,
   page: number = 1,
   perPage: number = 10,
+  role?: string,
+  departmentId?: string,
+  status?: string[],
 ): Promise<PaginatedResponse<AssetResponse>> {
   const { page: validPage, perPage: validPerPage } = validatePaginationParameters(
     page,
     perPage,
   );
 
-  return await getAssets(organizationId, validPage, validPerPage);
+  return await getAssets(organizationId, validPage, validPerPage, role, departmentId, status);
 }
 
 export async function getAssetByIdService(

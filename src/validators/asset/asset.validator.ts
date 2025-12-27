@@ -55,6 +55,7 @@ export const updateAssetSchema = Joi.object({
     .valid(
       'DRAFT',
       'MENUNGGU_PERSETUJUAN_RM',
+      'DISETUJUI_RM',
       'MENUNGGU_PERSETUJUAN_FINAL',
       'REVISI',
       'DISETUJUI',

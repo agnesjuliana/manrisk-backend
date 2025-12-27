@@ -103,6 +103,12 @@ export async function createAsset(
         select: {
           id: true,
           name: true,
+          department: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -115,14 +121,33 @@ export async function getAssets(
   organizationId: string,
   page: number,
   perPage: number,
+  role?: string,
+  departmentId?: string,
+  status?: string[],
 ): Promise<PaginatedResponse<AssetResponse>> {
   const skip = calculateSkip(page, perPage);
 
+  // Build where condition - filter by department for RISK_OWNER and status if provided
+  const whereCondition: any = {
+    organizationId,
+  };
+
+  if (role === 'RISK_OWNER' && departmentId) {
+    whereCondition.owner = {
+      departmentId,
+    };
+  }
+
+  // Add status filter if provided
+  if (status && status.length > 0) {
+    whereCondition.status = {
+      in: status,
+    };
+  }
+
   const [data, totalData] = await Promise.all([
     prisma.asset.findMany({
-      where: {
-        organizationId,
-      },
+      where: whereCondition,
       select: {
         id: true,
         organizationId: true,
@@ -148,6 +173,12 @@ export async function getAssets(
           select: {
             id: true,
             name: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -156,9 +187,7 @@ export async function getAssets(
       take: perPage,
     }),
     prisma.asset.count({
-      where: {
-        organizationId,
-      },
+      where: whereCondition,
     }),
   ]);
 
@@ -209,6 +238,12 @@ export async function getAssetById(
         select: {
           id: true,
           name: true,
+          department: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },
@@ -329,6 +364,12 @@ export async function updateAsset(
         select: {
           id: true,
           name: true,
+          department: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
     },

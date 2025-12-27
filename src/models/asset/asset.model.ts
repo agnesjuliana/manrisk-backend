@@ -36,9 +36,15 @@ export interface AssetClassificationData {
   title: string;
 }
 
+export interface AssetOwnerDepartment {
+  id: string;
+  name: string | null;
+}
+
 export interface AssetOwnerData {
   id: string;
   name: string;
+  department: AssetOwnerDepartment | null;
 }
 
 export interface AssetResponse {
