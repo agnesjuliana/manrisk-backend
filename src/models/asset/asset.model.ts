@@ -24,21 +24,31 @@ export interface UpdateAssetRequest {
   status?: string;
 }
 
+export interface AssetTypeData {
+  id: string;
+  title: string;
+}
+
+export interface AssetClassificationData {
+  id: string;
+  title: string;
+}
+
+export interface AssetOwnerData {
+  id: string;
+  name: string;
+}
+
 export interface AssetResponse {
   id: string;
   organizationId: string;
-  typeId: string;
-  classificationId: string;
-  ownerId: string;
+  type: AssetTypeData;
+  classification: AssetClassificationData;
+  owner: AssetOwnerData;
   name: string;
   location: string | null;
   status: string;
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;
-}
-
-export interface AssetsResponse {
-  data: AssetResponse[];
-  total: number;
 }

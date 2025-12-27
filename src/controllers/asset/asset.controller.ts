@@ -34,8 +34,12 @@ export const assetController = {
   async getAssets(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string };
+      const { page = 1, perPage = 10 } = request.query;
 
-      const result = await getAssetsService(user.organizationId);
+      const pageNumber = Number.parseInt(page as string, 10) || 1;
+      const perPageNumber = Number.parseInt(perPage as string, 10) || 10;
+
+      const result = await getAssetsService(user.organizationId, pageNumber, perPageNumber);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,

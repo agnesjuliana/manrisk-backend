@@ -3,8 +3,8 @@ import {
   type CreateAssetRequest,
   type UpdateAssetRequest,
   type AssetResponse,
-  type AssetsResponse,
 } from '../../models/asset';
+import { calculateSkip, type PaginatedResponse } from '../../utils/pagination';
 
 export async function createAsset(
   organizationId: string,
@@ -48,18 +48,82 @@ export async function createAsset(
       location: data.location || null,
       status: 'DRAFT',
     },
+    select: {
+      id: true,
+      organizationId: true,
+      name: true,
+      location: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
+      type: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      classification: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 
-  return asset;
+  return asset as AssetResponse;
 }
 
-export async function getAssets(organizationId: string): Promise<AssetsResponse> {
-  const [data, total] = await Promise.all([
+export async function getAssets(
+  organizationId: string,
+  page: number,
+  perPage: number,
+): Promise<PaginatedResponse<AssetResponse>> {
+  const skip = calculateSkip(page, perPage);
+
+  const [data, totalData] = await Promise.all([
     prisma.asset.findMany({
       where: {
         organizationId,
       },
+      select: {
+        id: true,
+        organizationId: true,
+        name: true,
+        location: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+        type: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        classification: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        owner: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
+      skip,
+      take: perPage,
     }),
     prisma.asset.count({
       where: {
@@ -68,9 +132,16 @@ export async function getAssets(organizationId: string): Promise<AssetsResponse>
     }),
   ]);
 
+  const totalPage = Math.ceil(totalData / perPage);
+
   return {
-    data,
-    total,
+    data: data as AssetResponse[],
+    metadata: {
+      page,
+      per_page: perPage,
+      total_data: totalData,
+      total_page: totalPage,
+    },
   };
 }
 
@@ -83,9 +154,37 @@ export async function getAssetById(
       id: assetId,
       organizationId,
     },
+    select: {
+      id: true,
+      organizationId: true,
+      name: true,
+      location: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
+      type: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      classification: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 
-  return asset;
+  return asset as AssetResponse;
 }
 
 export async function updateAsset(
@@ -107,9 +206,37 @@ export async function updateAsset(
       id: assetId,
     },
     data: updateData,
+    select: {
+      id: true,
+      organizationId: true,
+      name: true,
+      location: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
+      type: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      classification: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
   });
 
-  return asset;
+  return asset as AssetResponse;
 }
 
 export async function deleteAsset(organizationId: string, assetId: string): Promise<void> {

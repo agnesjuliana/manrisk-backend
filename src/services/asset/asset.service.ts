@@ -2,8 +2,8 @@ import {
   type CreateAssetRequest,
   type UpdateAssetRequest,
   type AssetResponse,
-  type AssetsResponse,
 } from '../../models/asset';
+import { validatePaginationParameters, type PaginatedResponse } from '../../utils/pagination';
 import {
   createAsset,
   getAssets,
@@ -20,8 +20,17 @@ export async function createAssetService(
   return await createAsset(organizationId, userId, data);
 }
 
-export async function getAssetsService(organizationId: string): Promise<AssetsResponse> {
-  return await getAssets(organizationId);
+export async function getAssetsService(
+  organizationId: string,
+  page: number = 1,
+  perPage: number = 10,
+): Promise<PaginatedResponse<AssetResponse>> {
+  const { page: validPage, perPage: validPerPage } = validatePaginationParameters(
+    page,
+    perPage,
+  );
+
+  return await getAssets(organizationId, validPage, validPerPage);
 }
 
 export async function getAssetByIdService(
