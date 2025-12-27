@@ -52,6 +52,20 @@ interface AssetClassificationSeedData {
   deletedAt?: string;
 }
 
+interface RiskCategorySeedData {
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
+interface RiskSourceSeedData {
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
+
 async function seedOrganizations() {
   console.log('🌱 Seeding organizations...');
 
@@ -217,13 +231,91 @@ async function seedAssetClassifications() {
   }
 }
 
+async function seedRiskCategories() {
+  console.log('🌱 Seeding risk categories...');
+
+  const csvPath = path.join(__dirname, 'data', 'risk-categories.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const riskCategories = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as RiskCategorySeedData[];
+
+  for (const category of riskCategories) {
+    const existingCategory = await prisma.riskCategory.findFirst({
+      where: {
+        title: category.title,
+        organizationId: null,
+      },
+    });
+
+    if (existingCategory) {
+      console.log(`✓ Risk Category ${category.title} sudah ada`);
+      continue;
+    }
+
+    await prisma.riskCategory.create({
+      data: {
+        organizationId: null,
+        title: category.title,
+        createdAt: new Date(category.createdAt),
+        updatedAt: new Date(category.updatedAt),
+        deletedAt: category.deletedAt ? new Date(category.deletedAt) : null,
+      },
+    });
+
+    console.log(`✓ Risk Category ${category.title} berhasil dibuat`);
+  }
+}
+
+async function seedRiskSources() {
+  console.log('🌱 Seeding risk sources...');
+
+  const csvPath = path.join(__dirname, 'data', 'risk-sources.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const riskSources = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as RiskSourceSeedData[];
+
+  for (const source of riskSources) {
+    const existingSource = await prisma.riskSource.findFirst({
+      where: {
+        title: source.title,
+        organizationId: null,
+      },
+    });
+
+    if (existingSource) {
+      console.log(`✓ Risk Source ${source.title} sudah ada`);
+      continue;
+    }
+
+    await prisma.riskSource.create({
+      data: {
+        organizationId: null,
+        title: source.title,
+        createdAt: new Date(source.createdAt),
+        updatedAt: new Date(source.updatedAt),
+        deletedAt: source.deletedAt ? new Date(source.deletedAt) : null,
+      },
+    });
+
+    console.log(`✓ Risk Source ${source.title} berhasil dibuat`);
+  }
+}
+
 async function main() {
   try {
     // await seedOrganizations();
     // await seedUsers();
     // await seedContexts();
-    await seedAssetTypes();
-    await seedAssetClassifications();
+    // await seedAssetTypes();
+    // await seedAssetClassifications();
+    await seedRiskCategories();
+    await seedRiskSources();
     console.log('✅ Seeding selesai');
   } catch (error) {
     console.error('❌ Error seeding:', error);
