@@ -2,26 +2,29 @@ import { type NextFunction, type Request, type Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import { CustomResponse } from '../../middleware';
-import { type CreateAssetRequest, type UpdateAssetRequest } from '../../models/asset';
 import {
-  createAssetService,
-  getAssetsService,
-  getAssetByIdService,
-  updateAssetService,
-  deleteAssetService,
-} from '../../services/asset';
+  type CreateRiskRegisterRequest,
+  type UpdateRiskRegisterRequest,
+} from '../../models/risk-register';
+import {
+  createRiskRegisterService,
+  getRiskRegistersService,
+  getRiskRegisterByIdService,
+  updateRiskRegisterService,
+  deleteRiskRegisterService,
+} from '../../services/risk-register';
 
-export const assetController = {
-  async createAsset(request: Request, response: Response, next: NextFunction) {
+export const riskRegisterController = {
+  async createRiskRegister(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string };
-      const data = request.body as CreateAssetRequest;
+      const data = request.body as CreateRiskRegisterRequest;
 
-      const result = await createAssetService(user.organizationId, user.id, data);
+      const result = await createRiskRegisterService(user.organizationId, user.id, data);
 
       const customResponse = new CustomResponse(
         StatusCodes.CREATED,
-        'Asset berhasil dibuat',
+        'Risk Register berhasil dibuat',
         result,
       );
 
@@ -31,29 +34,23 @@ export const assetController = {
     }
   },
 
-  async getAssets(request: Request, response: Response, next: NextFunction) {
+  async getRiskRegisters(request: Request, response: Response, next: NextFunction) {
     try {
-      const user = request.user as {
-        id: string;
-        organizationId: string;
-        role?: string;
-        departmentId?: string;
-      };
+      const user = request.user as { id: string; organizationId: string; role: string; departmentId?: string };
       const { page = 1, perPage = 10, status } = request.query;
 
       const pageNumber = Number.parseInt(page as string, 10) || 1;
       const perPageNumber = Number.parseInt(perPage as string, 10) || 10;
 
-      // Parse status filter - can be single string or array of strings
+      // Parse status filter - can be single or comma-separated values
       let statusFilter: string[] | undefined;
 
       if (status) {
-        statusFilter = Array.isArray(status)
-          ? (status as string[])
-          : (status as string).split(',').map((s) => s.trim());
+        const statusString = status as string;
+        statusFilter = statusString.includes(',') ? statusString.split(',').map(s => s.trim()) : [statusString];
       }
 
-      const result = await getAssetsService(
+      const result = await getRiskRegistersService(
         user.organizationId,
         pageNumber,
         perPageNumber,
@@ -64,7 +61,7 @@ export const assetController = {
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
-        'Assets berhasil diambil',
+        'Risk Register berhasil diambil',
         result,
       );
 
@@ -74,26 +71,16 @@ export const assetController = {
     }
   },
 
-  async getAssetById(request: Request, response: Response, next: NextFunction) {
+  async getRiskRegisterById(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string };
       const { id } = request.params;
 
-      const result = await getAssetByIdService(user.organizationId, id);
-
-      if (!result) {
-        const customResponse = new CustomResponse(
-          StatusCodes.NOT_FOUND,
-          'Asset tidak ditemukan',
-          null,
-        );
-
-        return response.status(StatusCodes.NOT_FOUND).json(customResponse.toJSON());
-      }
+      const result = await getRiskRegisterByIdService(user.organizationId, id);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
-        'Asset berhasil diambil',
+        'Risk Register berhasil diambil',
         result,
       );
 
@@ -103,17 +90,17 @@ export const assetController = {
     }
   },
 
-  async updateAsset(request: Request, response: Response, next: NextFunction) {
+  async updateRiskRegister(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string };
       const { id } = request.params;
-      const data = request.body as UpdateAssetRequest;
+      const data = request.body as UpdateRiskRegisterRequest;
 
-      const result = await updateAssetService(user.organizationId, id, data);
+      const result = await updateRiskRegisterService(user.organizationId, id, data);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
-        'Asset berhasil diperbarui',
+        'Risk Register berhasil diperbarui',
         result,
       );
 
@@ -123,16 +110,16 @@ export const assetController = {
     }
   },
 
-  async deleteAsset(request: Request, response: Response, next: NextFunction) {
+  async deleteRiskRegister(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string };
       const { id } = request.params;
 
-      await deleteAssetService(user.organizationId, id);
+      await deleteRiskRegisterService(user.organizationId, id);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
-        'Asset berhasil dihapus',
+        'Risk Register berhasil dihapus',
       );
 
       return response.status(StatusCodes.OK).json(customResponse.toJSON());

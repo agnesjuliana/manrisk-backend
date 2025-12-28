@@ -10,7 +10,20 @@ interface UserSeedData {
   email: string;
   password: string;
   name: string;
-  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER';
+  role: 'ADMIN' | 'RISK_MANAGER' | 'RISK_OWNER' | 'TOP_MANAGEMENT';
+  organizationId?: string;
+  departmentId?: string;
+}
+
+interface DepartmentSeedData {
+  id: string;
+  organizationId: string;
+  name: string;
+  description?: string;
+  isActive?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
 }
 
 interface ContextSeedData {
@@ -133,10 +146,50 @@ async function seedUsers() {
         password: hashedPassword,
         name: user.name,
         role: user.role,
+        organizationId: user.organizationId || null,
+        departmentId: user.departmentId || null,
       },
     });
 
     console.log(`✓ User ${user.email} berhasil dibuat`);
+  }
+}
+
+async function seedDepartments() {
+  console.log('🌱 Seeding departments...');
+
+  const csvPath = path.join(__dirname, 'data', 'departments.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const departments = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as DepartmentSeedData[];
+
+  for (const department of departments) {
+    const existingDepartment = await prisma.department.findUnique({
+      where: { id: department.id },
+    });
+
+    if (existingDepartment) {
+      console.log(`✓ Department ${department.name} sudah ada`);
+      continue;
+    }
+
+    await prisma.department.create({
+      data: {
+        id: department.id,
+        organizationId: department.organizationId,
+        name: department.name || null,
+        description: department.description || null,
+        isActive: department.isActive ? department.isActive === 'true' : null,
+        createdAt: new Date(department.createdAt),
+        updatedAt: new Date(department.updatedAt),
+        deletedAt: department.deletedAt ? new Date(department.deletedAt) : null,
+      },
+    });
+
+    console.log(`✓ Department ${department.name} berhasil dibuat`);
   }
 }
 
@@ -309,11 +362,12 @@ async function seedRiskSources() {
 
 async function main() {
   try {
-    // await seedOrganizations();
-    // await seedUsers();
-    // await seedContexts();
-    // await seedAssetTypes();
-    // await seedAssetClassifications();
+    await seedOrganizations();
+    await seedDepartments();
+    await seedUsers();
+    await seedContexts();
+    await seedAssetTypes();
+    await seedAssetClassifications();
     await seedRiskCategories();
     await seedRiskSources();
     console.log('✅ Seeding selesai');

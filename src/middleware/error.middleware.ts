@@ -14,24 +14,32 @@ export const ErrorHandler = (
   // Handle Prisma errors
   if (typeof error.code === 'string' && error.code.startsWith('P')) {
     // P2002 = Unique constraint failed
-    if (error.code === 'P2002') {
+    switch (error.code) {
+    case 'P2002': {
       errorStatus = StatusCodes.BAD_REQUEST;
       errorMessage = `Duplicate entry: ${error.meta?.target?.join(', ')} already exists`;
+    
+    break;
     }
-    // P2003 = Foreign key constraint failed
-    else if (error.code === 'P2003') {
+
+    case 'P2003': {
       errorStatus = StatusCodes.BAD_REQUEST;
       errorMessage = 'Invalid reference: Related record not found';
+    
+    break;
     }
-    // P2025 = Record not found
-    else if (error.code === 'P2025') {
+
+    case 'P2025': {
       errorStatus = StatusCodes.NOT_FOUND;
       errorMessage = 'Record not found';
+    
+    break;
     }
-    // Default Prisma error
-    else {
+
+    default: {
       errorStatus = StatusCodes.BAD_REQUEST;
       errorMessage = error.message || 'Database error occurred';
+    }
     }
   }
   // Handle custom numeric status codes

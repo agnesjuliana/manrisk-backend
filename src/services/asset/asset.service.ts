@@ -3,7 +3,6 @@ import {
   type UpdateAssetRequest,
   type AssetResponse,
 } from '../../models/asset';
-import { validatePaginationParameters, type PaginatedResponse } from '../../utils/pagination';
 import {
   createAsset,
   getAssets,
@@ -11,6 +10,7 @@ import {
   updateAsset,
   deleteAsset,
 } from '../../repositories/asset';
+import { validatePaginationParameters, type PaginatedResponse } from '../../utils/pagination';
 
 export async function createAssetService(
   organizationId: string,
@@ -28,10 +28,7 @@ export async function getAssetsService(
   departmentId?: string,
   status?: string[],
 ): Promise<PaginatedResponse<AssetResponse>> {
-  const { page: validPage, perPage: validPerPage } = validatePaginationParameters(
-    page,
-    perPage,
-  );
+  const { page: validPage, perPage: validPerPage } = validatePaginationParameters(page, perPage);
 
   return await getAssets(organizationId, validPage, validPerPage, role, departmentId, status);
 }
@@ -39,7 +36,7 @@ export async function getAssetsService(
 export async function getAssetByIdService(
   organizationId: string,
   assetId: string,
-): Promise<AssetResponse | null> {
+): Promise<AssetResponse> {
   return await getAssetById(organizationId, assetId);
 }
 
@@ -51,9 +48,6 @@ export async function updateAssetService(
   return await updateAsset(organizationId, assetId, data);
 }
 
-export async function deleteAssetService(
-  organizationId: string,
-  assetId: string,
-): Promise<void> {
+export async function deleteAssetService(organizationId: string, assetId: string): Promise<void> {
   return await deleteAsset(organizationId, assetId);
 }

@@ -1,0 +1,4 @@
+id,organizationId,name,description,isActive,createdAt,updatedAt,deletedAt
+550e8400-e29b-41d4-a716-446655440001,550e8400-e29b-41d4-a716-446655440000,IT Department,Information Technology Division,true,2025-12-26T09:00:00Z,2025-12-26T09:00:00Z,
+550e8400-e29b-41d4-a716-446655440002,550e8400-e29b-41d4-a716-446655440000,Finance Department,Finance and Accounting Division,true,2025-12-26T09:00:00Z,2025-12-26T09:00:00Z,
+550e8400-e29b-41d4-a716-446655440003,550e8400-e29b-41d4-a716-446655440000,HR Department,Human Resources Division,true,2025-12-26T09:00:00Z,2025-12-26T09:00:00Z,

@@ -101,7 +101,7 @@ export async function createAssetApproval(
       organizationId,
       managerId,
       message: data.message || null,
-      status: 'DRAFT',
+      status: 'MENUNGGU_PERSETUJUAN_FINAL',
       assets: {
         create: data.assetIds.map(assetId => ({
           assetId,
@@ -210,6 +210,7 @@ export async function updateAssetApproval(
 
   // Determine asset status based on approval status
   let assetStatusToUpdate: string | null = null;
+
   if (data.status === 'DISETUJUI') {
     assetStatusToUpdate = 'DISETUJUI';
   } else if (data.status === 'DITOLAK') {

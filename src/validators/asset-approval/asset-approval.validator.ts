@@ -16,9 +16,9 @@ export const createAssetApprovalSchema = Joi.object({
 export const updateAssetApprovalSchema = Joi.object({
   status: Joi.string()
     .required()
-    .valid('DRAFT', 'MENUNGGU_PERSETUJUAN_FINAL', 'REVISI', 'DISETUJUI', 'DITOLAK')
+    .valid('MENUNGGU_PERSETUJUAN_FINAL', 'DISETUJUI', 'DITOLAK')
     .messages({
       'any.required': 'Status harus diisi',
-      'any.only': 'Status harus salah satu dari: DRAFT, MENUNGGU_PERSETUJUAN_FINAL, REVISI, DISETUJUI, DITOLAK',
+      'any.only': 'Status harus salah satu dari: MENUNGGU_PERSETUJUAN_FINAL, DISETUJUI, DITOLAK',
     }),
 }).unknown(true);
