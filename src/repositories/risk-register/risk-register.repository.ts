@@ -66,23 +66,59 @@ export async function createRiskRegister(
   userId: string,
   data: CreateRiskRegisterRequest,
 ): Promise<RiskRegisterResponse> {
-  // Validate that category exists
-  const category = await prisma.riskCategory.findUnique({
-    where: { id: data.riskCategoryId },
-  });
+  // Handle category - check if exists or create if not
+  let categoryId = data.riskcategory.id;
 
-  if (!category) {
-    throw new Error('Risk Category tidak ditemukan');
-  }
-
-  // Validate source if provided
-  if (data.riskSourceId) {
-    const source = await prisma.riskSource.findUnique({
-      where: { id: data.riskSourceId },
+  if (!categoryId) {
+    // Check if category with same title exists in org or in public (null organizationId)
+    const existingCategory = await prisma.riskCategory.findFirst({
+      where: {
+        title: data.riskcategory.name,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
+      },
     });
 
-    if (!source) {
-      throw new Error('Risk Source tidak ditemukan');
+    if (existingCategory) {
+      categoryId = existingCategory.id;
+    } else {
+      const newCategory = await prisma.riskCategory.create({
+        data: {
+          title: data.riskcategory.name,
+          organizationId,
+        },
+      });
+      categoryId = newCategory.id;
+    }
+  }
+
+  // Handle source - check if exists or create if not
+  let sourceId = data.source.id;
+
+  if (!sourceId) {
+    // Check if source with same title exists in org or in public (null organizationId)
+    const existingSource = await prisma.riskSource.findFirst({
+      where: {
+        title: data.source.name,
+        OR: [
+          { organizationId },
+          { organizationId: null },
+        ],
+      },
+    });
+
+    if (existingSource) {
+      sourceId = existingSource.id;
+    } else {
+      const newSource = await prisma.riskSource.create({
+        data: {
+          title: data.source.name,
+          organizationId,
+        },
+      });
+      sourceId = newSource.id;
     }
   }
 
@@ -120,8 +156,8 @@ export async function createRiskRegister(
       ownerId: userId,
       assetId: data.assetId || null,
       contextId: data.contextId || null,
-      riskCategoryId: data.riskCategoryId,
-      riskSourceId: data.riskSourceId || null,
+      riskCategoryId: categoryId,
+      riskSourceId: sourceId,
       customRiskId: data.customRiskId,
       vulnerability: data.vulnerability,
       threat: data.threat,
@@ -148,6 +184,7 @@ export async function getRiskRegisters(
   role?: string,
   departmentId?: string,
   status?: string[],
+  search?: string,
 ): Promise<PaginatedResponse<RiskRegisterResponse>> {
   const skip = calculateSkip(page, perPage);
 
@@ -168,6 +205,24 @@ export async function getRiskRegisters(
     whereClause.status = {
       in: status,
     };
+  }
+
+  // Add search filter if provided - search in customRiskId and identifiedRisk
+  if (search) {
+    whereClause.OR = [
+      {
+        customRiskId: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+      {
+        identifiedRisk: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      },
+    ];
   }
 
   const [data, totalData] = await Promise.all([
@@ -220,25 +275,65 @@ export async function updateRiskRegister(
   id: string,
   data: UpdateRiskRegisterRequest,
 ): Promise<RiskRegisterResponse> {
-  // Validate category if provided
-  if (data.riskCategoryId) {
-    const category = await prisma.riskCategory.findUnique({
-      where: { id: data.riskCategoryId },
-    });
+  // Handle category if provided
+  let categoryId: string | undefined;
+  if (data.riskcategory) {
+    if (data.riskcategory.id) {
+      categoryId = data.riskcategory.id;
+    } else {
+      // Check if category with same title exists in org or in public (null organizationId)
+      const existingCategory = await prisma.riskCategory.findFirst({
+        where: {
+          title: data.riskcategory.name,
+          OR: [
+            { organizationId },
+            { organizationId: null },
+          ],
+        },
+      });
 
-    if (!category) {
-      throw new Error('Risk Category tidak ditemukan');
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      } else {
+        const newCategory = await prisma.riskCategory.create({
+          data: {
+            title: data.riskcategory.name,
+            organizationId,
+          },
+        });
+        categoryId = newCategory.id;
+      }
     }
   }
 
-  // Validate source if provided
-  if (data.riskSourceId) {
-    const source = await prisma.riskSource.findUnique({
-      where: { id: data.riskSourceId },
-    });
+  // Handle source if provided
+  let sourceId: string | undefined;
+  if (data.source) {
+    if (data.source.id) {
+      sourceId = data.source.id;
+    } else {
+      // Check if source with same title exists in org or in public (null organizationId)
+      const existingSource = await prisma.riskSource.findFirst({
+        where: {
+          title: data.source.name,
+          OR: [
+            { organizationId },
+            { organizationId: null },
+          ],
+        },
+      });
 
-    if (!source) {
-      throw new Error('Risk Source tidak ditemukan');
+      if (existingSource) {
+        sourceId = existingSource.id;
+      } else {
+        const newSource = await prisma.riskSource.create({
+          data: {
+            title: data.source.name,
+            organizationId,
+          },
+        });
+        sourceId = newSource.id;
+      }
     }
   }
 
@@ -273,8 +368,8 @@ export async function updateRiskRegister(
   const updateData: any = {};
   if (data.assetId !== undefined) updateData.assetId = data.assetId || null;
   if (data.contextId !== undefined) updateData.contextId = data.contextId || null;
-  if (data.riskCategoryId !== undefined) updateData.riskCategoryId = data.riskCategoryId;
-  if (data.riskSourceId !== undefined) updateData.riskSourceId = data.riskSourceId || null;
+  if (categoryId !== undefined) updateData.riskCategoryId = categoryId;
+  if (sourceId !== undefined) updateData.riskSourceId = sourceId || null;
   if (data.customRiskId !== undefined) updateData.customRiskId = data.customRiskId;
   if (data.vulnerability !== undefined) updateData.vulnerability = data.vulnerability;
   if (data.threat !== undefined) updateData.threat = data.threat;
@@ -287,6 +382,7 @@ export async function updateRiskRegister(
   if (data.likelihoodOccurence !== undefined)
     updateData.likelihoodOccurence = data.likelihoodOccurence || null;
   if (data.detection !== undefined) updateData.detection = data.detection || null;
+  if (data.ownerId !== undefined) updateData.ownerId = data.ownerId;
   if (data.status !== undefined) updateData.status = data.status;
 
   const riskRegister = await prisma.riskRegister.update({

@@ -3,11 +3,29 @@ import Joi from 'joi';
 export const createRiskRegisterSchema = Joi.object({
   assetId: Joi.string().optional().allow(null, ''),
   contextId: Joi.string().optional().allow(null, ''),
-  riskCategoryId: Joi.string().required().messages({
-    'any.required': 'Risk Category ID harus diisi',
-    'string.base': 'Risk Category ID harus berupa string',
-  }),
-  riskSourceId: Joi.string().optional().allow(null, ''),
+  ownerId: Joi.string().optional().allow(null, ''),
+  riskcategory: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama risk category tidak boleh kosong',
+      'any.required': 'Nama risk category harus diisi',
+    }),
+  })
+    .required()
+    .messages({
+      'any.required': 'Risk category harus diisi',
+    }),
+  source: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama risk source tidak boleh kosong',
+      'any.required': 'Nama risk source harus diisi',
+    }),
+  })
+    .required()
+    .messages({
+      'any.required': 'Risk source harus diisi',
+    }),
   customRiskId: Joi.string().required().messages({
     'any.required': 'Custom Risk ID harus diisi',
     'string.base': 'Custom Risk ID harus berupa string',
@@ -36,10 +54,21 @@ export const createRiskRegisterSchema = Joi.object({
 export const updateRiskRegisterSchema = Joi.object({
   assetId: Joi.string().optional().allow(null, ''),
   contextId: Joi.string().optional().allow(null, ''),
-  riskCategoryId: Joi.string().optional().messages({
-    'string.base': 'Risk Category ID harus berupa string',
-  }),
-  riskSourceId: Joi.string().optional().allow(null, ''),
+  ownerId: Joi.string().optional().allow(null, ''),
+  riskcategory: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama risk category tidak boleh kosong',
+      'any.required': 'Nama risk category harus diisi',
+    }),
+  }).optional(),
+  source: Joi.object({
+    id: Joi.string().optional().allow(null, ''),
+    name: Joi.string().required().messages({
+      'string.empty': 'Nama risk source tidak boleh kosong',
+      'any.required': 'Nama risk source harus diisi',
+    }),
+  }).optional(),
   customRiskId: Joi.string().optional().messages({
     'string.base': 'Custom Risk ID harus berupa string',
   }),

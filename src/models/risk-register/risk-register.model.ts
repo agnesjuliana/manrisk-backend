@@ -1,8 +1,19 @@
+export interface RiskCategoryInput {
+  id?: string | null;
+  name: string;
+}
+
+export interface RiskSourceInput {
+  id?: string | null;
+  name: string;
+}
+
 export interface CreateRiskRegisterRequest {
   assetId?: string;
   contextId?: string;
-  riskCategoryId: string;
-  riskSourceId?: string;
+  ownerId?: string;
+  riskcategory: RiskCategoryInput;
+  source: RiskSourceInput;
   customRiskId: string;
   vulnerability: string;
   threat: string;
@@ -19,8 +30,9 @@ export interface CreateRiskRegisterRequest {
 export interface UpdateRiskRegisterRequest {
   assetId?: string;
   contextId?: string;
-  riskCategoryId?: string;
-  riskSourceId?: string;
+  ownerId?: string;
+  riskcategory?: RiskCategoryInput;
+  source?: RiskSourceInput;
   customRiskId?: string;
   vulnerability?: string;
   threat?: string;

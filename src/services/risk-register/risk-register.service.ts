@@ -26,8 +26,9 @@ export async function getRiskRegistersService(
   role?: string,
   departmentId?: string,
   status?: string[],
+  search?: string,
 ): Promise<any> {
-  return await getRiskRegisters(organizationId, page, perPage, role, departmentId, status);
+  return await getRiskRegisters(organizationId, page, perPage, role, departmentId, status, search);
 }
 
 export async function getRiskRegisterByIdService(

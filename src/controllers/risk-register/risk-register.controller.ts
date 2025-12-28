@@ -17,10 +17,16 @@ import {
 export const riskRegisterController = {
   async createRiskRegister(request: Request, response: Response, next: NextFunction) {
     try {
-      const user = request.user as { id: string; organizationId: string };
+      const user = request.user as { id: string; organizationId: string; role: string };
       const data = request.body as CreateRiskRegisterRequest;
 
-      const result = await createRiskRegisterService(user.organizationId, user.id, data);
+      // If user is RISK_MANAGER and ownerId is provided, use it; otherwise use current user's ID
+      const ownerId = user.role === 'RISK_MANAGER' && data.ownerId ? data.ownerId : user.id;
+
+      const result = await createRiskRegisterService(user.organizationId, ownerId, {
+        ...data,
+        ownerId: undefined,
+      });
 
       const customResponse = new CustomResponse(
         StatusCodes.CREATED,
@@ -37,7 +43,7 @@ export const riskRegisterController = {
   async getRiskRegisters(request: Request, response: Response, next: NextFunction) {
     try {
       const user = request.user as { id: string; organizationId: string; role: string; departmentId?: string };
-      const { page = 1, perPage = 10, status } = request.query;
+      const { page = 1, perPage = 10, status, search } = request.query;
 
       const pageNumber = Number.parseInt(page as string, 10) || 1;
       const perPageNumber = Number.parseInt(perPage as string, 10) || 10;
@@ -50,6 +56,8 @@ export const riskRegisterController = {
         statusFilter = statusString.includes(',') ? statusString.split(',').map(s => s.trim()) : [statusString];
       }
 
+      const searchString = (search as string) || undefined;
+
       const result = await getRiskRegistersService(
         user.organizationId,
         pageNumber,
@@ -57,6 +65,7 @@ export const riskRegisterController = {
         user.role,
         user.departmentId,
         statusFilter,
+        searchString,
       );
 
       const customResponse = new CustomResponse(
@@ -92,11 +101,17 @@ export const riskRegisterController = {
 
   async updateRiskRegister(request: Request, response: Response, next: NextFunction) {
     try {
-      const user = request.user as { id: string; organizationId: string };
+      const user = request.user as { id: string; organizationId: string; role: string };
       const { id } = request.params;
       const data = request.body as UpdateRiskRegisterRequest;
 
-      const result = await updateRiskRegisterService(user.organizationId, id, data);
+      // If user is RISK_MANAGER and ownerId is provided, use it; otherwise remove it from data
+      const updateData = { ...data };
+      if (user.role !== 'RISK_MANAGER' && updateData.ownerId !== undefined) {
+        delete updateData.ownerId;
+      }
+
+      const result = await updateRiskRegisterService(user.organizationId, id, updateData);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
