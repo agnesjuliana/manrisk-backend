@@ -79,6 +79,13 @@ interface RiskSourceSeedData {
   deletedAt?: string;
 }
 
+interface ControlSeedData {
+  category: string;
+  code: string;
+  title: string;
+  description: string;
+}
+
 async function seedOrganizations() {
   console.log('🌱 Seeding organizations...');
 
@@ -360,16 +367,56 @@ async function seedRiskSources() {
   }
 }
 
+async function seedControls() {
+  console.log('🌱 Seeding controls...');
+
+  const csvPath = path.join(__dirname, 'data', 'iso-control.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf-8');
+
+  const controls = parse(csvContent, {
+    columns: true,
+    skip_empty_lines: true,
+  }) as ControlSeedData[];
+
+  for (const control of controls) {
+    const existingControl = await prisma.control.findFirst({
+      where: {
+        code: control.code,
+        organizationId: null,
+      },
+    });
+
+    if (existingControl) {
+      console.log(`✓ Control ${control.code} sudah ada`);
+      continue;
+    }
+
+    await prisma.control.create({
+      data: {
+        code: control.code,
+        category: control.category,
+        title: control.title,
+        description: control.description,
+        isAnnex: true,
+        organizationId: null,
+      },
+    });
+
+    console.log(`✓ Control ${control.code} - ${control.title} berhasil dibuat`);
+  }
+}
+
 async function main() {
   try {
-    await seedOrganizations();
-    await seedDepartments();
-    await seedUsers();
-    await seedContexts();
-    await seedAssetTypes();
-    await seedAssetClassifications();
-    await seedRiskCategories();
-    await seedRiskSources();
+    // await seedOrganizations();
+    // await seedDepartments();
+    // await seedUsers();
+    // await seedContexts();
+    // await seedAssetTypes();
+    // await seedAssetClassifications();
+    // await seedRiskCategories();
+    // await seedRiskSources();
+    await seedControls();
     console.log('✅ Seeding selesai');
   } catch (error) {
     console.error('❌ Error seeding:', error);

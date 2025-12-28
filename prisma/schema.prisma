@@ -469,7 +469,9 @@ model RiskApprovalTLRisk {
 model Control {
   id             String    @id @default(uuid())
   code           String
+  category       String?
   title          String
+  description    String?
   isAnnex        Boolean   @default(false)
   organizationId String?
   createdAt      DateTime  @default(now())
