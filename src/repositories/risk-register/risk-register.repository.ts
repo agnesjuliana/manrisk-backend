@@ -277,6 +277,7 @@ export async function updateRiskRegister(
 ): Promise<RiskRegisterResponse> {
   // Handle category if provided
   let categoryId: string | undefined;
+
   if (data.riskcategory) {
     if (data.riskcategory.id) {
       categoryId = data.riskcategory.id;
@@ -308,6 +309,7 @@ export async function updateRiskRegister(
 
   // Handle source if provided
   let sourceId: string | undefined;
+
   if (data.source) {
     if (data.source.id) {
       sourceId = data.source.id;

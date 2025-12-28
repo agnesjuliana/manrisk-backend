@@ -10,6 +10,7 @@ import DepartmentRoutes from './department';
 import ExternalStakeholderRoutes from './external-stakeholder';
 import OrganizationRoutes from './organization';
 import { regulationRouter } from './regulation';
+import riskApprovalRouter from './risk-approval';
 import riskCriteriaRouter from './risk-criteria';
 import riskRegisterRouter from './risk-register';
 import UserManagementRoutes from './user-management';
@@ -27,6 +28,7 @@ router.use('/risk-criteria', riskCriteriaRouter);
 router.use('/assets', assetRouter);
 router.use('/asset-approvals', assetApprovalRouter);
 router.use('/risk-registers', riskRegisterRouter);
+router.use('/risk-approvals', riskApprovalRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;

@@ -107,6 +107,7 @@ export const riskRegisterController = {
 
       // If user is RISK_MANAGER and ownerId is provided, use it; otherwise remove it from data
       const updateData = { ...data };
+
       if (user.role !== 'RISK_MANAGER' && updateData.ownerId !== undefined) {
         delete updateData.ownerId;
       }
