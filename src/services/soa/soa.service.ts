@@ -15,8 +15,10 @@ export async function getSOAsService(
   perPage: number,
   search?: string,
   status?: string,
+  targetDateFrom?: string | Date,
+  targetDateTo?: string | Date,
 ): Promise<PaginatedResponse<SOADetailResponse>> {
-  return getSOAs(organizationId, page, perPage, search, status);
+  return getSOAs(organizationId, page, perPage, search, status, targetDateFrom, targetDateTo);
 }
 
 export async function getSOAByIdService(

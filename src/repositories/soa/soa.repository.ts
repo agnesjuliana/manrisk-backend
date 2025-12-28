@@ -12,8 +12,8 @@ const soaDetailSelect = {
   controlId: true,
   managerId: true,
   status: true,
-  efektivitas: true,
   notes: true,
+  targetDate: true,
   createdAt: true,
   updatedAt: true,
   deletedAt: true,
@@ -71,7 +71,16 @@ export async function createSOA(
   });
 
   if (!manager) {
-    throw new Error('Manager tidak ditemukan atau bukan milik organisasi ini');
+    // Debug: cek apakah user ada tapi di org berbeda
+    const userExists = await prisma.user.findUnique({
+      where: { id: data.managerId },
+    });
+
+    const error = userExists ? new Error(
+        `Manager dengan ID ${data.managerId} ditemukan, tetapi tidak milik organisasi ini. User ini milik org: ${userExists.organizationId}`,
+      ) : new Error(`Manager dengan ID ${data.managerId} tidak ditemukan di sistem`);
+
+    throw error;
   }
 
   const soa = await prisma.sOA.create({
@@ -95,6 +104,8 @@ export async function getSOAs(
   perPage: number,
   search?: string,
   status?: string,
+  targetDateFrom?: string | Date,
+  targetDateTo?: string | Date,
 ): Promise<PaginatedResponse<SOADetailResponse>> {
   const skip = calculateSkip(page, perPage);
 
@@ -114,6 +125,22 @@ export async function getSOAs(
   // Add status filter
   if (status) {
     whereConditions.status = status;
+  }
+
+  // Add targetDate range filter
+  if (targetDateFrom || targetDateTo) {
+    whereConditions.targetDate = {};
+
+    if (targetDateFrom) {
+      whereConditions.targetDate.gte = new Date(targetDateFrom);
+    }
+
+    if (targetDateTo) {
+      // Add 1 day to targetDateTo to include the entire day
+      const toDate = new Date(targetDateTo);
+      toDate.setDate(toDate.getDate() + 1);
+      whereConditions.targetDate.lt = toDate;
+    }
   }
 
   const [data, totalData] = await Promise.all([
@@ -198,7 +225,15 @@ export async function updateSOA(
     });
 
     if (!manager) {
-      throw new Error('Manager tidak ditemukan atau bukan milik organisasi ini');
+      const userExists = await prisma.user.findUnique({
+        where: { id: data.managerId },
+      });
+
+      const error = userExists ? new Error(
+          `Manager dengan ID ${data.managerId} ditemukan, tetapi tidak milik organisasi ini. User ini milik org: ${userExists.organizationId}`,
+        ) : new Error(`Manager dengan ID ${data.managerId} tidak ditemukan di sistem`);
+
+      throw error;
     }
   }
 

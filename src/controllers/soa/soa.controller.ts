@@ -34,8 +34,18 @@ export const soaController = {
       const perPage = Number.parseInt(request.query.per_page as string, 10) || 10;
       const search = request.query.search as string | undefined;
       const status = request.query.status as string | undefined;
+      const targetDateFrom = request.query.target_date_from as string | undefined;
+      const targetDateTo = request.query.target_date_to as string | undefined;
 
-      const result = await getSOAsService(user.organizationId, page, perPage, search, status);
+      const result = await getSOAsService(
+        user.organizationId,
+        page,
+        perPage,
+        search,
+        status,
+        targetDateFrom,
+        targetDateTo,
+      );
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,
