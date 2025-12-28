@@ -6,6 +6,7 @@ import assetRouter from './asset';
 import assetApprovalRouter from './asset-approval';
 import CiaObjectiveRoutes from './cia-objective';
 import ContextRoutes from './context';
+import controlRouter from './control';
 import DepartmentRoutes from './department';
 import ExternalStakeholderRoutes from './external-stakeholder';
 import OrganizationRoutes from './organization';
@@ -29,6 +30,7 @@ router.use('/assets', assetRouter);
 router.use('/asset-approvals', assetApprovalRouter);
 router.use('/risk-registers', riskRegisterRouter);
 router.use('/risk-approvals', riskApprovalRouter);
+router.use('/controls', controlRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;
