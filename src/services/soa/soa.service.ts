@@ -1,6 +1,5 @@
-import { type CreateSOARequest, type UpdateSOARequest, type SOADetailResponse } from '../../models/soa';
+import { type CreateSOARequest, type UpdateSOARequest, type SOADetailResponse, type SOAListItemResponse } from '../../models/soa';
 import { createSOA, deleteSOA, getSOAById, getSOAs, updateSOA } from '../../repositories/soa';
-import { type PaginatedResponse } from '../../utils/pagination';
 
 export async function createSOAService(
   organizationId: string,
@@ -11,14 +10,13 @@ export async function createSOAService(
 
 export async function getSOAsService(
   organizationId: string,
-  page: number,
-  perPage: number,
   search?: string,
   status?: string,
+  implementationStatus?: string,
   targetDateFrom?: string | Date,
   targetDateTo?: string | Date,
-): Promise<PaginatedResponse<SOADetailResponse>> {
-  return getSOAs(organizationId, page, perPage, search, status, targetDateFrom, targetDateTo);
+): Promise<SOAListItemResponse[]> {
+  return getSOAs(organizationId, search, status, implementationStatus, targetDateFrom, targetDateTo);
 }
 
 export async function getSOAByIdService(

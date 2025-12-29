@@ -3,8 +3,8 @@ import {
   type CreateSOARequest,
   type UpdateSOARequest,
   type SOADetailResponse,
+  type SOAListItemResponse,
 } from '../../models/soa';
-import { calculateSkip, type PaginatedResponse } from '../../utils/pagination';
 
 const soaDetailSelect = {
   id: true,
@@ -12,6 +12,7 @@ const soaDetailSelect = {
   controlId: true,
   managerId: true,
   status: true,
+  implementationStatus: true,
   notes: true,
   targetDate: true,
   createdAt: true,
@@ -100,15 +101,12 @@ export async function createSOA(
 
 export async function getSOAs(
   organizationId: string,
-  page: number,
-  perPage: number,
   search?: string,
   status?: string,
+  implementationStatus?: string,
   targetDateFrom?: string | Date,
   targetDateTo?: string | Date,
-): Promise<PaginatedResponse<SOADetailResponse>> {
-  const skip = calculateSkip(page, perPage);
-
+): Promise<SOAListItemResponse[]> {
   const whereConditions: any = {
     organizationId,
   };
@@ -127,6 +125,11 @@ export async function getSOAs(
     whereConditions.status = status;
   }
 
+  // Add implementationStatus filter
+  if (implementationStatus) {
+    whereConditions.implementationStatus = implementationStatus;
+  }
+
   // Add targetDate range filter
   if (targetDateFrom || targetDateTo) {
     whereConditions.targetDate = {};
@@ -143,30 +146,20 @@ export async function getSOAs(
     }
   }
 
-  const [data, totalData] = await Promise.all([
-    prisma.sOA.findMany({
-      where: whereConditions,
-      select: soaDetailSelect,
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: perPage,
-    }),
-    prisma.sOA.count({
-      where: whereConditions,
-    }),
-  ]);
+  const data = await prisma.sOA.findMany({
+    where: whereConditions,
+    select: soaDetailSelect,
+    orderBy: { createdAt: 'desc' },
+  });
 
-  const totalPage = Math.ceil(totalData / perPage);
+  // Compute statusTarget for each SOA
+  const now = new Date();
+  const result: SOAListItemResponse[] = data.map((soa: any) => ({
+    ...soa,
+    statusTarget: soa.targetDate && new Date(soa.targetDate) < now ? 'OVERDUE' : 'ON_TRACK',
+  }));
 
-  return {
-    data: data as SOADetailResponse[],
-    metadata: {
-      page,
-      per_page: perPage,
-      total_data: totalData,
-      total_page: totalPage,
-    },
-  };
+  return result;
 }
 
 export async function getSOAById(
@@ -243,6 +236,10 @@ export async function updateSOA(
       controlId: data.controlId ?? soa.controlId,
       managerId: data.managerId ?? soa.managerId,
       status: data.status === undefined ? soa.status : ((data.status || null) as any),
+      implementationStatus:
+        data.implementationStatus === undefined
+          ? soa.implementationStatus
+          : ((data.implementationStatus || null) as any),
       notes: data.notes === undefined ? soa.notes : data.notes || null,
       targetDate:
         data.targetDate === undefined

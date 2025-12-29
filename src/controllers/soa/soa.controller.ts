@@ -30,19 +30,17 @@ export const soaController = {
   async getSOAs(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const user = request.user as { id: string; organizationId: string };
-      const page = Number.parseInt(request.query.page as string, 10) || 1;
-      const perPage = Number.parseInt(request.query.per_page as string, 10) || 10;
       const search = request.query.search as string | undefined;
       const status = request.query.status as string | undefined;
+      const implementationStatus = request.query.implementation_status as string | undefined;
       const targetDateFrom = request.query.target_date_from as string | undefined;
       const targetDateTo = request.query.target_date_to as string | undefined;
 
       const result = await getSOAsService(
         user.organizationId,
-        page,
-        perPage,
         search,
         status,
+        implementationStatus,
         targetDateFrom,
         targetDateTo,
       );
