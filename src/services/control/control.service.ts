@@ -6,7 +6,6 @@ import {
   getControls,
   updateControl,
 } from '../../repositories/control';
-import { type PaginatedResponse } from '../../utils/pagination';
 
 export async function createControlService(
   organizationId: string,
@@ -17,12 +16,10 @@ export async function createControlService(
 
 export async function getControlsService(
   organizationId: string,
-  page: number,
-  perPage: number,
   search?: string,
   isAnnex?: boolean,
-): Promise<PaginatedResponse<ControlResponse>> {
-  return getControls(organizationId, page, perPage, search, isAnnex);
+): Promise<ControlResponse[]> {
+  return getControls(organizationId, search, isAnnex);
 }
 
 export async function getControlByIdService(

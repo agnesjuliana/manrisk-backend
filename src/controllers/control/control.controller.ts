@@ -34,12 +34,10 @@ export const controlController = {
   async getControls(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
       const user = request.user as { id: string; organizationId: string };
-      const page = Number.parseInt(request.query.page as string, 10) || 1;
-      const perPage = Number.parseInt(request.query.per_page as string, 10) || 10;
       const search = request.query.search as string | undefined;
       const isAnnex = request.query.is_annex ? request.query.is_annex === 'true' : undefined;
 
-      const result = await getControlsService(user.organizationId, page, perPage, search, isAnnex);
+      const result = await getControlsService(user.organizationId, search, isAnnex);
 
       const customResponse = new CustomResponse(
         StatusCodes.OK,

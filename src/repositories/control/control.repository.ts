@@ -38,13 +38,9 @@ export async function createControl(
 
 export async function getControls(
   organizationId: string,
-  page: number,
-  perPage: number,
   search?: string,
   isAnnex?: boolean,
-): Promise<PaginatedResponse<ControlResponse>> {
-  const skip = calculateSkip(page, perPage);
-
+): Promise<ControlResponse[]> {
   const whereConditions: any = {
     AND: [
       {
@@ -68,29 +64,34 @@ export async function getControls(
     whereConditions.AND.push({ isAnnex });
   }
 
-  const [data, totalData] = await Promise.all([
-    prisma.control.findMany({
-      where: whereConditions,
-      orderBy: { createdAt: 'desc' },
-      skip,
-      take: perPage,
-    }),
-    prisma.control.count({
-      where: whereConditions,
-    }),
-  ]);
+  const data = await prisma.control.findMany({
+    where: whereConditions,
+    orderBy: { createdAt: 'desc' },
+  });
 
-  const totalPage = Math.ceil(totalData / perPage);
-
-  return {
-    data,
-    metadata: {
-      page,
-      per_page: perPage,
-      total_data: totalData,
-      total_page: totalPage,
+  // Get treatment counts for each control (filtered by user's organization)
+  const treatmentCounts = await prisma.treatmentControl.groupBy({
+    by: ['controlId'],
+    _count: {
+      controlId: true,
     },
-  };
+    where: {
+      treatment: {
+        organizationId, // Only count treatments from user's organization
+      },
+    },
+  });
+
+  // Create a map for quick lookup
+  const countMap = new Map(treatmentCounts.map((item) => [item.controlId, item._count.controlId]));
+
+  // Enrich data with treatment counts
+  const enrichedData = data.map((control) => ({
+    ...control,
+    countRelatedTreatment: countMap.get(control.id) || 0,
+  }));
+
+  return enrichedData;
 }
 
 export async function getControlById(

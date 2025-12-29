@@ -25,4 +25,5 @@ export interface ControlResponse {
   createdAt: Date;
   updatedAt?: Date;
   deletedAt?: Date;
+  countRelatedTreatment?: number;
 }
