@@ -26,7 +26,7 @@ router.post(
 router.get(
   '',
   authenticate,
-  hasAccess(['ADMIN', 'RISK_MANAGER']),
+  hasAccess(['ADMIN', 'RISK_MANAGER', 'TOP_MANAGEMENT']),
   userManagementController.getUsers,
 );
 
