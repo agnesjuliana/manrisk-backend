@@ -80,9 +80,14 @@ export const treatmentController = {
 
   async updateTreatment(request: Request, response: Response, next: NextFunction): Promise<void> {
     try {
-      const user = request.user as { id: string; organizationId: string };
+      const user = request.user as { id: string; organizationId: string; role: string };
       const { id } = request.params;
       const data = request.body as UpdateTreatmentRequest;
+
+      // Validate that only TOP_MANAGEMENT can set isApprovedByTop
+      if (data.isApprovedByTop !== undefined && user.role !== 'TOP_MANAGEMENT') {
+        throw new Error('Hanya TOP_MANAGEMENT yang dapat mengubah status approval');
+      }
 
       const result = await updateTreatmentService(user.organizationId, id, data);
 
