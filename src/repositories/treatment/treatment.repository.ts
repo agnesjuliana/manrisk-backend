@@ -289,10 +289,12 @@ export async function getTreatments(
   }
 
   // Get all risks for this organization with their current treatments
+  // Only show treatments for APPROVED risks (status = DISETUJUI)
   const risks = await prisma.riskRegister.findMany({
     where: {
       organizationId,
       deletedAt: null,
+      status: 'DISETUJUI',
     },
     include: {
       treatments: {
