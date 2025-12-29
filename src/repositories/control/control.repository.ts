@@ -3,6 +3,7 @@ import {
   type CreateControlRequest,
   type UpdateControlRequest,
   type ControlResponse,
+  type ControlDetailResponse,
 } from '../../models/control';
 import { calculateSkip, type PaginatedResponse } from '../../utils/pagination';
 
@@ -67,6 +68,23 @@ export async function getControls(
   const data = await prisma.control.findMany({
     where: whereConditions,
     orderBy: { createdAt: 'desc' },
+    include: {
+      soas: {
+        where: { organizationId }, // Only include SOA for user's organization
+        select: {
+          id: true,
+          organizationId: true,
+          controlId: true,
+          managerId: true,
+          status: true,
+          notes: true,
+          targetDate: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+        },
+      },
+    },
   });
 
   // Get treatment counts for each control (filtered by user's organization)
@@ -85,11 +103,15 @@ export async function getControls(
   // Create a map for quick lookup
   const countMap = new Map(treatmentCounts.map((item) => [item.controlId, item._count.controlId]));
 
-  // Enrich data with treatment counts
-  const enrichedData = data.map((control) => ({
-    ...control,
-    countRelatedTreatment: countMap.get(control.id) || 0,
-  }));
+  // Enrich data with treatment counts and SOA record
+  const enrichedData = data.map((control) => {
+    const { soas, ...controlWithoutSoas } = control;
+    return {
+      ...controlWithoutSoas,
+      countRelatedTreatment: countMap.get(control.id) || 0,
+      soa: soas.length > 0 ? soas[0] : null,
+    };
+  });
 
   return enrichedData;
 }
@@ -97,15 +119,82 @@ export async function getControls(
 export async function getControlById(
   organizationId: string,
   id: string,
-): Promise<ControlResponse | null> {
+): Promise<ControlDetailResponse | null> {
   const control = await prisma.control.findFirst({
     where: {
       id,
       OR: [{ organizationId }, { organizationId: null }],
     },
+    include: {
+      soas: {
+        where: { organizationId }, // Only include SOA for user's organization
+        select: {
+          id: true,
+          organizationId: true,
+          controlId: true,
+          managerId: true,
+          status: true,
+          notes: true,
+          targetDate: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+        },
+      },
+      treatments: {
+        where: {
+          treatment: { organizationId }, // Only include treatments from user's organization
+        },
+        include: {
+          treatment: {
+            select: {
+              id: true,
+              treatmentOpt: true,
+              detailedActionPlan: true,
+              startAction: true,
+              endAction: true,
+              isApprovedByTop: true,
+              riskId: true,
+              risk: {
+                select: {
+                  id: true,
+                  customRiskId: true,
+                  identifiedRisk: true,
+                  impactSeverity: true,
+                  likelihoodOccurence: true,
+                  detection: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
-  return control || null;
+  if (!control) {
+    return null;
+  }
+
+  // Transform the response to match ControlDetailResponse
+  const controlWithSOA: ControlDetailResponse = {
+    ...control,
+    soa: control.soas.length > 0 ? control.soas[0] : null,
+    treatments: control.treatments.map((tc) => ({
+      id: tc.treatment.id,
+      treatmentOpt: tc.treatment.treatmentOpt,
+      detailedActionPlan: tc.treatment.detailedActionPlan,
+      startAction: tc.treatment.startAction,
+      endAction: tc.treatment.endAction,
+      isApprovedByTop: tc.treatment.isApprovedByTop,
+      risk: tc.treatment.risk,
+    })),
+  };
+
+  // Remove the soas array property since we now have soa
+  delete (controlWithSOA as any).soas;
+
+  return controlWithSOA;
 }
 
 export async function updateControl(

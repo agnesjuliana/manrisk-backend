@@ -1,4 +1,4 @@
-import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse } from '../../models/control';
+import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse, type ControlDetailResponse } from '../../models/control';
 import {
   createControl,
   deleteControl,
@@ -25,7 +25,7 @@ export async function getControlsService(
 export async function getControlByIdService(
   organizationId: string,
   id: string,
-): Promise<ControlResponse | null> {
+): Promise<ControlDetailResponse | null> {
   return getControlById(organizationId, id);
 }
 

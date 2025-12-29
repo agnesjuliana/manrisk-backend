@@ -10,10 +10,10 @@ export const createSOASchema = Joi.object({
     'string.empty': 'Manager ID tidak boleh kosong',
   }),
   status: Joi.string()
-    .valid('BERJALAN', 'DIRENCANAKAN', 'TIDAK_KOMPATIBEL', 'DIHENTIKAN')
+    .valid('BELUM_DITENTUKAN', 'RELEVAN', 'TIDAK_RELEVANL', 'DIHENTIKAN')
     .optional()
     .messages({
-      'any.only': 'Status hanya bisa BERJALAN, DIRENCANAKAN, TIDAK_KOMPATIBEL, atau DIHENTIKAN',
+      'any.only': 'Status hanya bisa BELUM_DITENTUKAN, RELEVAN, TIDAK_RELEVANL, atau DIHENTIKAN',
     }),
   notes: Joi.string().optional().allow(null),
   targetDate: Joi.date().optional().allow(null),
@@ -23,10 +23,10 @@ export const updateSOASchema = Joi.object({
   controlId: Joi.string().optional(),
   managerId: Joi.string().optional(),
   status: Joi.string()
-    .valid('BERJALAN', 'DIRENCANAKAN', 'TIDAK_KOMPATIBEL', 'DIHENTIKAN')
+    .valid('BELUM_DITENTUKAN', 'RELEVAN', 'TIDAK_RELEVANL', 'DIHENTIKAN')
     .optional()
     .messages({
-      'any.only': 'Status hanya bisa BERJALAN, DIRENCANAKAN, TIDAK_KOMPATIBEL, atau DIHENTIKAN',
+      'any.only': 'Status hanya bisa BELUM_DITENTUKAN, RELEVAN, TIDAK_RELEVANL, atau DIHENTIKAN',
     }),
   notes: Joi.string().optional().allow(null),
   targetDate: Joi.date().optional().allow(null),
