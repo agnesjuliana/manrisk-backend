@@ -26,6 +26,9 @@ router.get('/', authenticate, controlController.getControls);
 // GET /controls/statistics - Get control statistics
 router.get('/statistics', authenticate, controlController.getStatistics);
 
+// GET /controls/options - Get control options for select
+router.get('/options', authenticate, controlController.getOptions);
+
 // GET /controls/:id - Get control by ID
 router.get('/:id', authenticate, controlController.getControlById);
 

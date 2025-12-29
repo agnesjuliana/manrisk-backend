@@ -38,4 +38,5 @@ export const validatePaginationParameters = (page: number, perPage: number): { p
 };
 
 // Backward compatibility export
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const validatePaginationParams = validatePaginationParameters;

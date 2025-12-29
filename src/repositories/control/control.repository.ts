@@ -5,8 +5,8 @@ import {
   type ControlResponse,
   type ControlDetailResponse,
   type ControlStatisticsResponse,
+  type ControlOptionResponse,
 } from '../../models/control';
-import { calculateSkip, type PaginatedResponse } from '../../utils/pagination';
 
 export async function createControl(
   organizationId: string,
@@ -107,6 +107,7 @@ export async function getControls(
   // Enrich data with treatment counts and SOA record
   const enrichedData = data.map((control) => {
     const { soas, ...controlWithoutSoas } = control;
+
     return {
       ...controlWithoutSoas,
       countRelatedTreatment: countMap.get(control.id) || 0,
@@ -120,7 +121,7 @@ export async function getControls(
 export async function getControlById(
   organizationId: string,
   id: string,
-): Promise<ControlDetailResponse | null> {
+): Promise<ControlDetailResponse> {
   const control = await prisma.control.findFirst({
     where: {
       id,
@@ -346,4 +347,43 @@ export async function getControlStatistics(
     totalAddedControlAssessed,
     totalUnassessed,
   };
+}
+
+export async function getControlOptions(
+  organizationId: string,
+  search?: string,
+): Promise<ControlOptionResponse[]> {
+  const whereConditions: any = {
+    AND: [
+      {
+        OR: [{ organizationId }, { organizationId: null }],
+      },
+    ],
+  };
+
+  // Add search filter
+  if (search) {
+    whereConditions.AND.push({
+      OR: [
+        { code: { contains: search, mode: 'insensitive' } },
+        { title: { contains: search, mode: 'insensitive' } },
+      ],
+    });
+  }
+
+  const controls = await prisma.control.findMany({
+    where: whereConditions,
+    select: {
+      id: true,
+      code: true,
+      title: true,
+    },
+    orderBy: { code: 'asc' },
+  });
+
+  // Merge code and title into single title field
+  return controls.map((control) => ({
+    id: control.id,
+    title: `${control.code} - ${control.title}`,
+  }));
 }

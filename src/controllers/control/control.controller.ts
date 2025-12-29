@@ -10,6 +10,7 @@ import {
   getControlsService,
   updateControlService,
   getControlStatisticsService,
+  getControlOptionsService,
 } from '../../services/control';
 
 export const controlController = {
@@ -123,6 +124,25 @@ export const controlController = {
       const customResponse = new CustomResponse(
         StatusCodes.OK,
         'Statistik control berhasil diambil',
+        result,
+      );
+
+      response.status(StatusCodes.OK).json(customResponse.toJSON());
+    } catch (error: any) {
+      next(error);
+    }
+  },
+
+  async getOptions(request: Request, response: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = request.user as { id: string; organizationId: string };
+      const search = request.query.search as string | undefined;
+
+      const result = await getControlOptionsService(user.organizationId, search);
+
+      const customResponse = new CustomResponse(
+        StatusCodes.OK,
+        'Opsi control berhasil diambil',
         result,
       );
 

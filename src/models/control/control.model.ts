@@ -68,3 +68,9 @@ export interface ControlStatisticsResponse {
   totalAddedControlAssessed: number;
   totalUnassessed: number;
 }
+
+export interface ControlOptionResponse {
+  id: string;
+  title: string;
+}
+
