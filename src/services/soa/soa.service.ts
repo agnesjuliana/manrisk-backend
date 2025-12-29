@@ -1,5 +1,5 @@
-import { createSOA, deleteSOA, getSOAById, getSOAs, updateSOA } from '../../repositories/soa';
 import { type CreateSOARequest, type UpdateSOARequest, type SOADetailResponse } from '../../models/soa';
+import { createSOA, deleteSOA, getSOAById, getSOAs, updateSOA } from '../../repositories/soa';
 import { type PaginatedResponse } from '../../utils/pagination';
 
 export async function createSOAService(

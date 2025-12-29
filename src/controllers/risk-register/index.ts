@@ -1,3 +1,3 @@
-export { riskRegisterController } from './risk-register.controller';
-export { riskCategoryController } from './risk-category.controller';
-export { riskSourceController } from './risk-source.controller';
+export * from './risk-register.controller';
+export * from './risk-category.controller';
+export * from './risk-source.controller';

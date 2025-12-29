@@ -1,1 +1,1 @@
-export { createSOASchema, updateSOASchema } from './soa.validator';
+export * from './soa.validator';

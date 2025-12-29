@@ -15,6 +15,7 @@ import riskApprovalRouter from './risk-approval';
 import riskCriteriaRouter from './risk-criteria';
 import riskRegisterRouter from './risk-register';
 import soaRouter from './soa';
+import treatmentRouter from './treatment';
 import UserManagementRoutes from './user-management';
 import UserRoutes from './user.router';
 
@@ -33,6 +34,7 @@ router.use('/risk-registers', riskRegisterRouter);
 router.use('/risk-approvals', riskApprovalRouter);
 router.use('/controls', controlRouter);
 router.use('/soa', soaRouter);
+router.use('/treatments', treatmentRouter);
 
 // eslint-disable-next-line import/no-default-export
 export default router;

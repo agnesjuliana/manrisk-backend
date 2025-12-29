@@ -1,7 +1,1 @@
-export {
-  createControlService,
-  getControlsService,
-  getControlByIdService,
-  updateControlService,
-  deleteControlService,
-} from './control.service';
+export * from './control.service';

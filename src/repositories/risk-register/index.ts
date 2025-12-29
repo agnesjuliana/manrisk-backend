@@ -1,3 +1,3 @@
 export * from './risk-register.repository';
-export { getRiskCategories } from './risk-category.repository';
-export { getRiskSources } from './risk-source.repository';
+export * from './risk-category.repository';
+export * from './risk-source.repository';

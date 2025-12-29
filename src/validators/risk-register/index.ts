@@ -1,1 +1,1 @@
-export { createRiskRegisterSchema, updateRiskRegisterSchema } from './risk-register.validator';
+export * from './risk-register.validator';

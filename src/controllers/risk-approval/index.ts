@@ -1,1 +1,1 @@
-export { riskApprovalController } from './risk-approval.controller';
+export * from './risk-approval.controller';

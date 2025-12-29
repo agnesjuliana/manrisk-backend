@@ -1,3 +1,4 @@
+import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse } from '../../models/control';
 import {
   createControl,
   deleteControl,
@@ -5,7 +6,6 @@ import {
   getControls,
   updateControl,
 } from '../../repositories/control';
-import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse } from '../../models/control';
 import { type PaginatedResponse } from '../../utils/pagination';
 
 export async function createControlService(

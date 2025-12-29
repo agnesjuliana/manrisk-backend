@@ -47,31 +47,6 @@ export interface UpdateRiskRegisterRequest {
   status?: string;
 }
 
-export interface RiskCategoryData {
-  id: string;
-  title: string;
-}
-
-export interface RiskSourceData {
-  id: string;
-  title: string;
-}
-
-export interface AssetData {
-  id: string;
-  name: string;
-}
-
-export interface ContextData {
-  id: string;
-  name: string;
-}
-
-export interface RiskOwnerData {
-  id: string;
-  name: string;
-}
-
 export interface RiskRegisterResponse {
   id: string;
   organizationId: string;
@@ -100,4 +75,29 @@ export interface RiskRegisterResponse {
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;
+}
+
+export interface RiskCategoryData {
+  id: string;
+  title: string;
+}
+
+export interface RiskSourceData {
+  id: string;
+  title: string;
+}
+
+export interface AssetData {
+  id: string;
+  name: string;
+}
+
+export interface ContextData {
+  id: string;
+  name: string;
+}
+
+export interface RiskOwnerData {
+  id: string;
+  name: string;
 }

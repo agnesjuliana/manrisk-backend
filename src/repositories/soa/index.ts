@@ -1,1 +1,1 @@
-export { createSOA, getSOAs, getSOAById, updateSOA, deleteSOA } from './soa.repository';
+export * from './soa.repository';

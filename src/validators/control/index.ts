@@ -1,1 +1,1 @@
-export { createControlSchema, updateControlSchema } from './control.validator';
+export * from './control.validator';

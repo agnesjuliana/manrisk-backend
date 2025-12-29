@@ -1,1 +1,1 @@
-export { createRiskApprovalSchema, updateRiskApprovalSchema } from './risk-approval.validator';
+export * from './risk-approval.validator';

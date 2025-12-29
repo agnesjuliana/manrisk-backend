@@ -1,1 +1,1 @@
-export { soaController } from './soa.controller';
+export * from './soa.controller';
