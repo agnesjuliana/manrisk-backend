@@ -1,0 +1,6 @@
+name,location,type_title,classification_title,owner_email,status
+Server Database,Data Center Room A,Data,Rahasia,admin@mail.com,DRAFT
+Laptop Development,Office Room 101,Hardware,Privat,risk@mail.com,DRAFT
+Network Router,Networking Room B,Software,Publik,manager@mail.com,DRAFT
+Storage System,Data Center Room C,Data,Rahasia,admin@mail.com,DRAFT
+Workstation Design,Design Studio Room 202,Hardware,Privat,risk@mail.com,DRAFT

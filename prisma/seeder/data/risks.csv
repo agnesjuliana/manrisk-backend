@@ -1,0 +1,6 @@
+customRiskId,vulnerability,threat,identifiedRisk,detail,category_title,source_title,owner_email,context_name,isConfidentiality,isIntegrity,isAvailability,impactSeverity,likelihoodOccurence,detection
+RISK-001,Unpatched Server,Cyber Attack,SQL Injection Vulnerability,Database server has unpatched SQL injection vulnerability,Data Privacy,External,risk@mail.com,Teknologi Informasi,true,true,false,5,4,3
+RISK-002,Weak Password Policy,Internal Threat,Unauthorized Access,Weak password policy allows easy account compromise,Operational,Internal,risk@mail.com,Manajemen Sumber Daya Manusia,true,false,false,3,4,2
+RISK-003,No Backup System,Data Loss,Data Unavailability,No backup system in place for critical data,Data Privacy,Internal,manager@mail.com,Teknologi Informasi,false,true,true,4,3,2
+RISK-004,Outdated Software,Malware,System Compromise,Outdated software libraries vulnerable to malware,Complicance,External,risk@mail.com,Compliance dan Kepatuhan,true,true,true,4,5,3
+RISK-005,Poor Access Control,Privilege Escalation,Unauthorized Data Access,Poor access control allows unauthorized data access,Strategic,Internal,manager@mail.com,Manajemen Risiko Operasional,true,false,false,3,3,2
