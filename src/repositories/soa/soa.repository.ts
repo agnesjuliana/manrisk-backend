@@ -156,7 +156,12 @@ export async function getSOAs(
   const now = new Date();
   const result: SOAListItemResponse[] = data.map((soa: any) => ({
     ...soa,
-    statusTarget: soa.targetDate && new Date(soa.targetDate) < now ? 'OVERDUE' : 'ON_TRACK',
+    statusTarget:
+      soa.targetDate &&
+      new Date(soa.targetDate) < now &&
+      soa.implementationStatus !== 'DIIMPLEMENTASIKAN'
+        ? 'OVERDUE'
+        : 'ON_TRACK',
   }));
 
   return result;
