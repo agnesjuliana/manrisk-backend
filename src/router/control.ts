@@ -23,6 +23,9 @@ router.post(
 // GET /controls - Get all controls
 router.get('/', authenticate, controlController.getControls);
 
+// GET /controls/statistics - Get control statistics
+router.get('/statistics', authenticate, controlController.getStatistics);
+
 // GET /controls/:id - Get control by ID
 router.get('/:id', authenticate, controlController.getControlById);
 

@@ -1,10 +1,11 @@
-import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse, type ControlDetailResponse } from '../../models/control';
+import { type CreateControlRequest, type UpdateControlRequest, type ControlResponse, type ControlDetailResponse, type ControlStatisticsResponse } from '../../models/control';
 import {
   createControl,
   deleteControl,
   getControlById,
   getControls,
   updateControl,
+  getControlStatistics,
 } from '../../repositories/control';
 
 export async function createControlService(
@@ -39,4 +40,10 @@ export async function updateControlService(
 
 export async function deleteControlService(organizationId: string, id: string): Promise<void> {
   return deleteControl(organizationId, id);
+}
+
+export async function getControlStatisticsService(
+  organizationId: string,
+): Promise<ControlStatisticsResponse> {
+  return getControlStatistics(organizationId);
 }

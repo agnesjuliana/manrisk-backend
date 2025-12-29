@@ -4,6 +4,7 @@ import {
   type UpdateControlRequest,
   type ControlResponse,
   type ControlDetailResponse,
+  type ControlStatisticsResponse,
 } from '../../models/control';
 import { calculateSkip, type PaginatedResponse } from '../../utils/pagination';
 
@@ -260,4 +261,89 @@ export async function deleteControl(organizationId: string, id: string): Promise
   await prisma.control.delete({
     where: { id },
   });
+}
+
+export async function getControlStatistics(
+  organizationId: string,
+): Promise<ControlStatisticsResponse> {
+  // Get all annex controls (global controls with isAnnex = true)
+  const totalAnnexControl = await prisma.control.count({
+    where: {
+      organizationId: null,
+      isAnnex: true,
+    },
+  });
+
+  // Get annex controls that have SOA created by the organization
+  const totalAnnexControlAssessed = await prisma.sOA.count({
+    where: {
+      organizationId,
+      control: {
+        organizationId: null,
+        isAnnex: true,
+      },
+    },
+  });
+
+  // Get controls added by the organization (organizationId matches)
+  const totalAddedControl = await prisma.control.count({
+    where: {
+      organizationId,
+    },
+  });
+
+  // Get organization's controls that have SOA created
+  const totalAddedControlAssessed = await prisma.sOA.count({
+    where: {
+      organizationId,
+      control: {
+        organizationId,
+      },
+    },
+  });
+
+  // Get unassessed controls (annex + organization controls without SOA)
+  // First get all annex controls
+  const allAnnexControls = await prisma.control.findMany({
+    where: {
+      organizationId: null,
+      isAnnex: true,
+    },
+    select: { id: true },
+  });
+
+  // Get all org controls
+  const allOrgControls = await prisma.control.findMany({
+    where: {
+      organizationId,
+    },
+    select: { id: true },
+  });
+
+  const allControlIds = [
+    ...allAnnexControls.map((c) => c.id),
+    ...allOrgControls.map((c) => c.id),
+  ];
+
+  // Get controls that have SOA from this organization
+  const assessedControls = await prisma.sOA.findMany({
+    where: {
+      organizationId,
+      controlId: {
+        in: allControlIds,
+      },
+    },
+    select: { controlId: true },
+  });
+
+  const assessedControlIds = new Set(assessedControls.map((s: any) => s.controlId));
+  const totalUnassessed = allControlIds.length - assessedControlIds.size;
+
+  return {
+    totalAnnexControl,
+    totalAnnexControlAssessed,
+    totalAddedControl,
+    totalAddedControlAssessed,
+    totalUnassessed,
+  };
 }

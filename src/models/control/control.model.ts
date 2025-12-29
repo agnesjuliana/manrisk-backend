@@ -61,3 +61,10 @@ export interface ControlDetailResponse extends ControlResponse {
   treatments?: TreatmentInControl[];
 }
 
+export interface ControlStatisticsResponse {
+  totalAnnexControl: number;
+  totalAnnexControlAssessed: number;
+  totalAddedControl: number;
+  totalAddedControlAssessed: number;
+  totalUnassessed: number;
+}

@@ -9,6 +9,7 @@ import {
   getControlByIdService,
   getControlsService,
   updateControlService,
+  getControlStatisticsService,
 } from '../../services/control';
 
 export const controlController = {
@@ -105,6 +106,24 @@ export const controlController = {
         StatusCodes.OK,
         'Control berhasil dihapus',
         null,
+      );
+
+      response.status(StatusCodes.OK).json(customResponse.toJSON());
+    } catch (error: any) {
+      next(error);
+    }
+  },
+
+  async getStatistics(request: Request, response: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = request.user as { id: string; organizationId: string };
+
+      const result = await getControlStatisticsService(user.organizationId);
+
+      const customResponse = new CustomResponse(
+        StatusCodes.OK,
+        'Statistik control berhasil diambil',
+        result,
       );
 
       response.status(StatusCodes.OK).json(customResponse.toJSON());
