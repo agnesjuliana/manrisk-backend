@@ -17,6 +17,7 @@ import riskRegisterRouter from './risk-register';
 import riskRegisterRevisionRouter from './risk-register-revision';
 import soaRouter from './soa';
 import statisticsRouter from './statistics';
+import taskRouter from './task';
 import treatmentRouter from './treatment';
 import UserManagementRoutes from './user-management';
 import UserRoutes from './user.router';
@@ -38,6 +39,7 @@ router.use('/risk-approvals', riskApprovalRouter);
 router.use('/controls', controlRouter);
 router.use('/soa', soaRouter);
 router.use('/treatments', treatmentRouter);
+router.use('/tasks', taskRouter);
 router.use('/statistics', statisticsRouter);
 
 // eslint-disable-next-line import/no-default-export

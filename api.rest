@@ -1,2 +1,191 @@
 # API REST Client
 # Gunakan extension REST Client untuk testing endpoint
+
+### Get User Tasks (Assets + Risks + Treatments + Controls + SOA)
+GET http://localhost:3000/tasks
+Authorization: Bearer YOUR_JWT_TOKEN
+
+# RESPONSE EXAMPLE - Complete with all modules:
+# {
+#   "statusCode": 200,
+#   "message": "User tasks berhasil diambil",
+#   "data": {
+#     "assets": {
+#       "assetTasks": [
+#         {
+#           "id": "asset-uuid-1",
+#           "name": "Database Server",
+#           "location": "Data Center A",
+#           "status": "REVISI",
+#           "taskType": "REVISION",
+#           "owner": {
+#             "id": "user-uuid-1",
+#             "name": "Doni Setiawan",
+#             "email": "doni@company.com"
+#           },
+#           "createdAt": "2025-01-01T10:00:00Z",
+#           "updatedAt": "2025-01-15T14:30:00Z"
+#         },
+#         {
+#           "id": "asset-uuid-2",
+#           "name": "Web Server",
+#           "location": "Data Center B",
+#           "status": "MENUNGGU_PERSETUJUAN_RM",
+#           "taskType": "PENDING_RM_APPROVAL",
+#           "owner": {
+#             "id": "user-uuid-2",
+#             "name": "Rina Kusuma",
+#             "email": "rina@company.com"
+#           },
+#           "createdAt": "2025-01-10T09:00:00Z",
+#           "updatedAt": "2025-01-16T11:20:00Z"
+#         }
+#       ],
+#       "totalAssetTasks": 2
+#     },
+#     "risks": {
+#       "riskTasks": [
+#         {
+#           "id": "risk-uuid-1",
+#           "customRiskId": "RISK-2025-001",
+#           "identifiedRisk": "Unauthorized Access to Database",
+#           "status": "REVISI",
+#           "taskType": "REVISION",
+#           "owner": {
+#             "id": "user-uuid-3",
+#             "name": "Ahmad Rifai",
+#             "email": "ahmad@company.com"
+#           },
+#           "category": {
+#             "id": "cat-uuid-1",
+#             "title": "Security"
+#           },
+#           "createdAt": "2025-01-05T08:30:00Z",
+#           "updatedAt": "2025-01-18T15:45:00Z"
+#         },
+#         {
+#           "id": "risk-uuid-2",
+#           "customRiskId": "RISK-2025-002",
+#           "identifiedRisk": "System Downtime Due to Hardware Failure",
+#           "status": "MENUNGGU_PERSETUJUAN_RM",
+#           "taskType": "PENDING_RM_APPROVAL",
+#           "owner": {
+#             "id": "user-uuid-4",
+#             "name": "Siti Nurhaliza",
+#             "email": "siti@company.com"
+#           },
+#           "category": {
+#             "id": "cat-uuid-2",
+#             "title": "Availability"
+#           },
+#           "createdAt": "2025-01-08T10:15:00Z",
+#           "updatedAt": "2025-01-17T13:00:00Z"
+#         }
+#       ],
+#       "totalRiskTasks": 2
+#     },
+#     "treatments": {
+#       "treatmentTasks": [
+#         {
+#           "id": "treatment-uuid-1",
+#           "riskId": "risk-uuid-1",
+#           "customRiskId": "RISK-2025-001",
+#           "identifiedRisk": "Unauthorized Access to Database",
+#           "treatmentOpt": "MITIGATE",
+#           "taskType": "PENDING_APPROVAL",
+#           "manager": {
+#             "id": "user-uuid-5",
+#             "name": "Budi Santoso",
+#             "email": "budi@company.com"
+#           },
+#           "pic": {
+#             "id": "user-uuid-6",
+#             "name": "Dewi Lestari",
+#             "email": "dewi@company.com"
+#           },
+#           "createdAt": "2025-01-12T09:00:00Z",
+#           "updatedAt": "2025-01-19T16:30:00Z"
+#         },
+#         {
+#           "id": "treatment-uuid-2",
+#           "riskId": "risk-uuid-3",
+#           "customRiskId": "RISK-2025-003",
+#           "identifiedRisk": "Data Breach Risk",
+#           "treatmentOpt": "TRANSFER",
+#           "taskType": "NEEDS_TREATMENT",
+#           "manager": {
+#             "id": "user-uuid-7",
+#             "name": "Eko Prasetyo",
+#             "email": "eko@company.com"
+#           },
+#           "createdAt": "2025-01-20T08:00:00Z"
+#         }
+#       ],
+#       "totalTreatmentTasks": 2
+#     },
+#     "controls": {
+#       "controlTasks": [],
+#       "totalControlTasks": 0
+#     },
+#     "soas": {
+#       "soaTasks": [
+#         {
+#           "id": "soa-uuid-1",
+#           "controlId": "control-uuid-1",
+#           "controlCode": "SC-001",
+#           "controlTitle": "Access Control",
+#           "status": "RELEVAN",
+#           "implementationStatus": "DALAM_IMPLEMENTASI",
+#           "statusTarget": "ON_TRACK",
+#           "targetDate": "2025-02-28T23:59:59Z",
+#           "notes": "Sedang dalam proses implementasi sistem RBAC",
+#           "createdAt": "2025-01-01T07:00:00Z",
+#           "updatedAt": "2025-01-20T10:30:00Z"
+#         },
+#         {
+#           "id": "soa-uuid-2",
+#           "controlId": "control-uuid-2",
+#           "controlCode": "SC-002",
+#           "controlTitle": "Encryption Standards",
+#           "status": "RELEVAN",
+#           "implementationStatus": "DIRENCANAKAN",
+#           "statusTarget": "OVERDUE",
+#           "targetDate": "2024-12-31T23:59:59Z",
+#           "notes": "Perlu segera dimulai implementasi enkripsi data",
+#           "createdAt": "2025-01-05T07:30:00Z",
+#           "updatedAt": "2025-01-21T09:00:00Z"
+#         }
+#       ],
+#       "totalSOATasks": 2
+#     }
+#   }
+# }
+#
+# TASK TYPES BY MODULE:
+# ==================
+# ASSET Tasks:
+#   - REVISION: User is RISK_OWNER, asset status = REVISI, owned by department
+#   - PENDING_RM_APPROVAL: User is RISK_MANAGER, asset status = MENUNGGU_PERSETUJUAN_RM
+#   - REJECTED_BY_TL: User is RISK_MANAGER, AssetApprovalTL status = DITOLAK
+#   - PENDING_TL_APPROVAL: User is TOP_MANAGEMENT, asset status = MENUNGGU_PERSETUJUAN_FINAL
+#
+# RISK Tasks:
+#   - REVISION: User is RISK_OWNER, risk status = REVISI, owned by department
+#   - PENDING_RM_APPROVAL: User is RISK_MANAGER, risk status = MENUNGGU_PERSETUJUAN_RM
+#   - REJECTED_BY_TL: User is RISK_MANAGER, RiskApprovalTL status = DITOLAK
+#   - PENDING_TL_APPROVAL: User is TOP_MANAGEMENT, risk status = MENUNGGU_PERSETUJUAN_FINAL
+#
+# TREATMENT Tasks:
+#   - PENDING_APPROVAL: User is TOP_MANAGEMENT, isApprovedByTop = false (newly created)
+#   - NEEDS_TREATMENT: User is RISK_MANAGER, risk meets criteria (score >= threshold, status = DISETUJUI, no treatment yet)
+#   - PENDING_APPROVAL: User is RISK_OWNER, user is assigned as PIC (picId = userId)
+#
+# CONTROL Tasks:
+#   - (Empty - Control model has no PIC field)
+#
+# SOA Tasks:
+#   - All SOA records where user is assigned as manager (managerId = userId)
+#   - statusTarget = OVERDUE if targetDate < now AND implementationStatus ≠ DIIMPLEMENTASIKAN
+
+
+
