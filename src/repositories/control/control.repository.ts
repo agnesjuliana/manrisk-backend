@@ -83,6 +83,13 @@ export async function getControls(
           createdAt: true,
           updatedAt: true,
           deletedAt: true,
+          manager: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
       },
     },
@@ -141,6 +148,13 @@ export async function getControlById(
           createdAt: true,
           updatedAt: true,
           deletedAt: true,
+          manager: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
       },
       treatments: {

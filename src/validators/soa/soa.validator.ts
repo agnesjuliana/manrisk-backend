@@ -5,15 +5,14 @@ export const createSOASchema = Joi.object({
     'any.required': 'Control ID harus diisi',
     'string.empty': 'Control ID tidak boleh kosong',
   }),
-  managerId: Joi.string().required().messages({
-    'any.required': 'Manager ID harus diisi',
+  managerId: Joi.string().optional().allow(null).messages({
     'string.empty': 'Manager ID tidak boleh kosong',
   }),
   status: Joi.string()
-    .valid('BELUM_DITENTUKAN', 'RELEVAN', 'TIDAK_RELEVANL', 'DIHENTIKAN')
+    .valid('BELUM_DITENTUKAN', 'RELEVAN', 'TIDAK_RELEVAN', 'DIHENTIKAN')
     .optional()
     .messages({
-      'any.only': 'Status hanya bisa BELUM_DITENTUKAN, RELEVAN, TIDAK_RELEVANL, atau DIHENTIKAN',
+      'any.only': 'Status hanya bisa BELUM_DITENTUKAN, RELEVAN, TIDAK_RELEVAN, atau DIHENTIKAN',
     }),
   notes: Joi.string().optional().allow(null),
   targetDate: Joi.date().optional().allow(null),

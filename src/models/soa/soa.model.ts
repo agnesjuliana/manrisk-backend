@@ -1,6 +1,6 @@
 export interface CreateSOARequest {
   controlId: string;
-  managerId: string;
+  managerId?: string | null;
   status?: string;
   notes?: string;
   targetDate?: Date | string;
@@ -8,7 +8,7 @@ export interface CreateSOARequest {
 
 export interface UpdateSOARequest {
   controlId?: string;
-  managerId?: string;
+  managerId?: string | null;
   status?: string;
   implementationStatus?: string;
   notes?: string;
@@ -19,7 +19,7 @@ export interface SOAResponse {
   id: string;
   organizationId: string;
   controlId: string;
-  managerId: string;
+  managerId?: string | null;
   status?: string;
   implementationStatus?: string;
   notes?: string;
@@ -40,7 +40,7 @@ export interface SOADetailResponse extends SOAResponse {
     id: string;
     name: string;
     email: string;
-  };
+  } | null;
 }
 
 export interface SOAListItemResponse extends SOAResponse {

@@ -561,7 +561,7 @@ model SOA {
   id                   String                       @id @default(uuid())
   organizationId       String
   controlId            String
-  managerId            String
+  managerId            String?
   status               SOAStatus?
   implementationStatus ControlImplementationStatus?
   notes                String?
@@ -572,7 +572,7 @@ model SOA {
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   control      Control      @relation(fields: [controlId], references: [id])
-  manager      User         @relation("SOAManager", fields: [managerId], references: [id])
+  manager      User?        @relation("SOAManager", fields: [managerId], references: [id])
 
   @@index([organizationId])
   @@index([controlId])

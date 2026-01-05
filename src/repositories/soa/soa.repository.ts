@@ -63,32 +63,34 @@ export async function createSOA(
     throw new Error('Organisasi ini sudah membuat SOA untuk control ini');
   }
 
-  // Validate manager exists and belongs to organization
-  const manager = await prisma.user.findFirst({
-    where: {
-      id: data.managerId,
-      organizationId,
-    },
-  });
-
-  if (!manager) {
-    // Debug: cek apakah user ada tapi di org berbeda
-    const userExists = await prisma.user.findUnique({
-      where: { id: data.managerId },
+  // Validate manager exists and belongs to organization (if provided)
+  if (data.managerId) {
+    const manager = await prisma.user.findFirst({
+      where: {
+        id: data.managerId,
+        organizationId,
+      },
     });
 
-    const error = userExists ? new Error(
-        `Manager dengan ID ${data.managerId} ditemukan, tetapi tidak milik organisasi ini. User ini milik org: ${userExists.organizationId}`,
-      ) : new Error(`Manager dengan ID ${data.managerId} tidak ditemukan di sistem`);
+    if (!manager) {
+      // Debug: cek apakah user ada tapi di org berbeda
+      const userExists = await prisma.user.findUnique({
+        where: { id: data.managerId },
+      });
 
-    throw error;
+      const error = userExists ? new Error(
+          `Manager dengan ID ${data.managerId} ditemukan, tetapi tidak milik organisasi ini. User ini milik org: ${userExists.organizationId}`,
+        ) : new Error(`Manager dengan ID ${data.managerId} tidak ditemukan di sistem`);
+
+      throw error;
+    }
   }
 
   const soa = await prisma.sOA.create({
     data: {
       organizationId,
       controlId: data.controlId,
-      managerId: data.managerId,
+      managerId: data.managerId || null,
       status: (data.status || null) as any,
       notes: data.notes || null,
       targetDate: data.targetDate ? new Date(data.targetDate) : null,
@@ -214,7 +216,7 @@ export async function updateSOA(
   }
 
   // Validate manager if provided
-  if (data.managerId) {
+  if (data.managerId !== undefined && data.managerId !== null) {
     const manager = await prisma.user.findFirst({
       where: {
         id: data.managerId,
@@ -239,7 +241,7 @@ export async function updateSOA(
     where: { id },
     data: {
       controlId: data.controlId ?? soa.controlId,
-      managerId: data.managerId ?? soa.managerId,
+      managerId: data.managerId === undefined ? soa.managerId : (data.managerId || null),
       status: data.status === undefined ? soa.status : ((data.status || null) as any),
       implementationStatus:
         data.implementationStatus === undefined

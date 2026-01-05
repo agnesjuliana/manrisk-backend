@@ -1,0 +1,8 @@
+-- DropForeignKey
+ALTER TABLE "SOA" DROP CONSTRAINT "SOA_managerId_fkey";
+
+-- AlterTable
+ALTER TABLE "SOA" ALTER COLUMN "managerId" DROP NOT NULL;
+
+-- AddForeignKey
+ALTER TABLE "SOA" ADD CONSTRAINT "SOA_managerId_fkey" FOREIGN KEY ("managerId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
