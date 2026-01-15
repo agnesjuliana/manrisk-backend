@@ -14,7 +14,7 @@ const router: Router = express.Router();
 router.post(
   '',
   authenticate,
-  hasAccess(['ADMIN']),
+  hasAccess(['ADMIN', 'RISK_MANAGER']),
   validate(upsertOrganizationJoiSchema),
   organizationController.upsertOrganization,
 );

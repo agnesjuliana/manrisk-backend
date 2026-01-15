@@ -26,6 +26,7 @@
     "migrate:dev:reset": "dotenv -e .env.development -- npx prisma migrate reset --schema ./prisma/schema.prisma",
     "migrate:prod:reset": "dotenv -e .env -- npx prisma migrate reset --force --schema ./prisma/schema.prisma",
     "seed:dev": "dotenv -e .env.development -- tsx ./prisma/seeder/seeder.ts",
+    "seed:dev:t": "dotenv -e .env.development -- tsx ./prisma/seeder/t_seeder.ts",
     "seed:prod": "dotenv -e .env -- tsx ./prisma/seeder/seeder.ts",
     "seed:prod:compiled": "dotenv -e .env -- node ./dist/prisma/seeder/seeder.js",
     "seed:demo": "dotenv -e .env -- tsx ./prisma/seeder/seeder-demo.ts",

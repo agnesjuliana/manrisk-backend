@@ -25,6 +25,11 @@ export interface ServicePriorityItem {
   C: number;
   I: number;
   A: number;
+  context?: {
+    id: string;
+    name: string;
+    description: string;
+  } | null;
 }
 
 export interface CIAObjectivesWithPrioritiesResponse {

@@ -1,0 +1,36 @@
+id,name,location,type_title,classification_title,owner_email,status
+550e8400-e29b-41d4-a716-446655440901,Server LMS,Ruang Sarana dan Prasarana,Hardware,Rahasia,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440902,Server Akademik (SIAKAD & sistem akademik),Ruang Sarana dan Prasarana,Hardware,Rahasia,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440903,Database Akademik,Server LMS,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440904,Perangkat Jaringan Sekolah (Router Switch),Ruang Sarana dan Prasarana,Hardware,Rahasia,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440905,Access Point WiFi Kelas,Ruang Kelas,Hardware,Privat,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440906,Smart TV Kelas,Ruang Kelas,Hardware,Privat,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440907,Komputer Admin Sarpras,Unit Sarana dan Prasarana,Hardware,Rahasia,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440908,Komputer Admin Akademik,Unit Akademik,Hardware,Rahasia,sarpras@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440909,Komputer Lab,Ruang Lab,Hardware,Privat,lab@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440910,Aplikasi LMS,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440911,Aplikasi SIAKAD,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440912,Aplikasi Guest Book,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440913,Aplikasi Administrator Sarpras,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440914,Aplikasi Kos Moklet,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440915,Aplikasi SINA Siswa,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440916,Aplikasi SINA BK,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440917,Aplikasi SINA Kesiswaan,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440918,Aplikasi Curriculum,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440919,Aplikasi Teacher,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440920,Aplikasi Duty Teacher,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440921,Aplikasi Human Resource,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440922,Aplikasi Letter Number,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440923,Website Orang Tua,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440924,Aplikasi Layanan Siswa,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440925,Aplikasi Layanan Guru & Karyawan,Server Sekolah,Software,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440926,Aplikasi Admin Sarpras,Server Sekolah,Software,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440927,Data Pribadi Siswa,Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440928,Data Pribadi Orang Tua / Wali,Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440929,Data Pribadi Guru & Pegawai,Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440930,Data Akademik Siswa (nilai presensi KBM),Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440931,Data Non-Akademik Siswa (SINA),Server Sekolah,Data,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440932,Data Keuangan Sekolah,Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440933,Data Konseling Siswa (BK),Server Sekolah,Data,Rahasia,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440934,Data Administrasi Surat,Server Sekolah,Data,Privat,it@smktelkom-mlg.sch.id,DRAFT
+550e8400-e29b-41d4-a716-446655440935,Data Log Sistem,Server Sekolah,Data,Privat,it@smktelkom-mlg.sch.id,DRAFT

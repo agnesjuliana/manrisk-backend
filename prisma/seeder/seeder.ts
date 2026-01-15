@@ -66,6 +66,7 @@ interface AssetClassificationSeedData {
 }
 
 interface RiskCategorySeedData {
+  id: string;
   title: string;
   createdAt: string;
   updatedAt: string;
@@ -73,6 +74,7 @@ interface RiskCategorySeedData {
 }
 
 interface RiskSourceSeedData {
+  id: string;
   title: string;
   createdAt: string;
   updatedAt: string;
@@ -90,6 +92,7 @@ interface AssetSeedData {
 
 interface RiskSeedData {
   customRiskId: string;
+  assetId: string;
   vulnerability: string;
   threat: string;
   identifiedRisk: string;
@@ -369,10 +372,9 @@ async function seedRiskCategories() {
   }) as RiskCategorySeedData[];
 
   for (const category of riskCategories) {
-    const existingCategory = await prisma.riskCategory.findFirst({
+    const existingCategory = await prisma.riskCategory.findUnique({
       where: {
-        title: category.title,
-        organizationId: null,
+        id: category.id,
       },
     });
 
@@ -383,6 +385,7 @@ async function seedRiskCategories() {
 
     await prisma.riskCategory.create({
       data: {
+        id: category.id,
         organizationId: null,
         title: category.title,
         createdAt: new Date(category.createdAt),
@@ -407,10 +410,9 @@ async function seedRiskSources() {
   }) as RiskSourceSeedData[];
 
   for (const source of riskSources) {
-    const existingSource = await prisma.riskSource.findFirst({
+    const existingSource = await prisma.riskSource.findUnique({
       where: {
-        title: source.title,
-        organizationId: null,
+        id: source.id,
       },
     });
 
@@ -421,6 +423,7 @@ async function seedRiskSources() {
 
     await prisma.riskSource.create({
       data: {
+        id: source.id,
         organizationId: null,
         title: source.title,
         createdAt: new Date(source.createdAt),

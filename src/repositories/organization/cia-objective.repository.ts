@@ -153,6 +153,13 @@ export const ciaObjectiveRepository = {
         cScore: true,
         iScore: true,
         aScore: true,
+        context: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
       },
     });
 
@@ -166,6 +173,11 @@ export const ciaObjectiveRepository = {
       C: p.cScore,
       I: p.iScore,
       A: p.aScore,
+      context: p.context ? {
+        id: p.context.id,
+        name: p.context.name,
+        description: p.context.description,
+      } : null,
     }));
 
     return {

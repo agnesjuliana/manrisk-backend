@@ -1,0 +1,6 @@
+email,password,name,role,organizationId,departmentId
+admin@smktelkom-mlg.sch.id,Password123!,Admin Sistem Manajemen Risiko,ADMIN,550e8400-e29b-41d4-a716-446655440100,550e8400-e29b-41d4-a716-446655440103
+it@smktelkom-mlg.sch.id,Password123!,"Whyna Agustin, S.Pd.",RISK_MANAGER,550e8400-e29b-41d4-a716-446655440100,550e8400-e29b-41d4-a716-446655440103
+sarpras@smktelkom-mlg.sch.id,Password123!,"Ekon Anjar Poernomo, S.Kom.",RISK_OWNER,550e8400-e29b-41d4-a716-446655440100,550e8400-e29b-41d4-a716-446655440102
+lab@smktelkom-mlg.sch.id,Password123!,"Roselina Febriati, S.ST.",RISK_OWNER,550e8400-e29b-41d4-a716-446655440100,550e8400-e29b-41d4-a716-446655440104
+wakilsarpras@smktelkom-mlg.sch.id,Password123!,"Mokhamad Hadi Wijaya, S.Kom., M.T.",TOP_MANAGEMENT,550e8400-e29b-41d4-a716-446655440100,550e8400-e29b-41d4-a716-446655440101
