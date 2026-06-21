@@ -19,8 +19,11 @@ echo "Running database migrations..."
 pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma
 
 if [ "${RUN_SEED:-true}" = "true" ]; then
-  echo "Running database seeder..."
+  echo "Running main database seeder..."
   pnpm exec tsx ./prisma/seeder/seeder.ts
+
+  echo "Running test database seeder..."
+  pnpm exec tsx ./prisma/seeder/t_seeder.ts
 fi
 
 echo "Starting application..."
