@@ -8,16 +8,21 @@ import routes from './router';
 
 const app = express();
 
+dotenv.config();
+
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: '*',
+    origin: allowedOrigins?.length ? allowedOrigins : '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: '*',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
   }),
 );
-dotenv.config();
 app.use(express.json({ limit: '12mb' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ limit: '12mb', extended: true }));

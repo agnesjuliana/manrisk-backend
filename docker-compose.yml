@@ -24,13 +24,22 @@ services:
       MAIL_DOMAIN: ${MAIL_DOMAIN:-}
       MAIL_EXPIRES_IN: ${MAIL_EXPIRES_IN:-24h}
       RUN_SEED: ${RUN_SEED:-true}
-    ports:
-      - ${APP_PORT:-4000}:4000
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://manrisk-frontend.pages.dev}
     depends_on:
       database:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - default
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.manrisk-be.rule=Host(`manrisk-be.betaforu.cloud`)
+      - traefik.http.routers.manrisk-be.entrypoints=websecure
+      - traefik.http.routers.manrisk-be.tls.certresolver=letsencrypt
+      - traefik.http.services.manrisk-be.loadbalancer.server.port=4000
 
   database:
     container_name: database-postgre
@@ -68,3 +77,7 @@ services:
 volumes:
   postgres-data:
   redis-data:
+
+networks:
+  traefik-public:
+    external: true
