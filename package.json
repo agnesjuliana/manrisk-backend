@@ -18,7 +18,7 @@
     "// build/prod ----": "----------------------------------------------",
     "build": "pnpm run tsc",
     "tsc": "tsc -p .",
-    "start": "dotenv -e .env.production -- node dist/index.js",
+    "start": "node dist/src/index.js",
     "start:prod": "pnpm run start",
     "prisma:generate": "dotenv -e .env.development -- npx prisma generate",
     "migrate:dev": "dotenv -e .env.development -- npx prisma migrate dev --schema ./prisma/schema.prisma",

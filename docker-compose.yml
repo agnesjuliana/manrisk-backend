@@ -1,28 +1,69 @@
-version: '3'
 services:
+  app:
+    container_name: manrisk-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_NAME: ${DATABASE_NAME:-manrisk}
+      DATABASE_USER: ${DATABASE_USER:-manrisk}
+      DATABASE_PASS: ${DATABASE_PASS:-manrisk_password}
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_URL: postgresql://${DATABASE_USER:-manrisk}:${DATABASE_PASS:-manrisk_password}@database:5432/${DATABASE_NAME:-manrisk}
+      CACHE_HOST: redis
+      CACHE_PORT: 6379
+      CACHE_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_API_KEY: ${MAIL_API_KEY:-}
+      MAIL_DOMAIN: ${MAIL_DOMAIN:-}
+      MAIL_EXPIRES_IN: ${MAIL_EXPIRES_IN:-24h}
+      RUN_SEED: ${RUN_SEED:-true}
+    ports:
+      - ${APP_PORT:-4000}:4000
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   database:
     container_name: database-postgre
     image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASS}
-    ports:
-      - ${DATABASE_PORT}:5432
+      POSTGRES_DB: ${DATABASE_NAME:-manrisk}
+      POSTGRES_USER: ${DATABASE_USER:-manrisk}
+      POSTGRES_PASSWORD: ${DATABASE_PASS:-manrisk_password}
     expose:
-      - ${DATABASE_PORT}
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     volumes:
-      - ./docker/volumes/:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+
   redis:
     container_name: redis-cache
     image: redis:7-alpine
     restart: always
-    ports:
-      - ${CACHE_PORT}:6379
+    expose:
+      - "6379"
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     volumes:
-      - ./docker/redis-data:/data
+      - redis-data:/data
 
 volumes:
   postgres-data:

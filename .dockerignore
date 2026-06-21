@@ -1,0 +1,15 @@
+node_modules
+dist
+docker
+storage
+uploads
+.git
+.github
+.vscode
+.idea
+.env
+.env.*
+*.log
+README.md
+api.rest
+test-db.js
